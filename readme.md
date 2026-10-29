@@ -2,6 +2,8 @@
 
 本專題使用 React + TypeScript + Vite 開發前端，Flask 提供後端 API，Python 環境使用 Conda 管理，名稱統一為 `IRandGAI`。
 
+小組共用開發規範見 [docs/guidelines.md](docs/guidelines.md)，涵蓋架構、模組分工、程式風格與驗證要求；Codex 與 Claude Code 的入口分別為根目錄的 `AGENTS.md` 與 `CLAUDE.md`。
+
 前後端專案已經建立好。取得 repository 後，依照以下步驟安裝相依套件即可，不需要重新執行 `create-vite` 或建立 React 專案。
 
 ## 開始前先準備
