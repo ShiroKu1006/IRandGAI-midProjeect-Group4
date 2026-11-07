@@ -3,3 +3,6 @@
 
 # secret files
 *.env
+
+#　cache
+__pycache__/
