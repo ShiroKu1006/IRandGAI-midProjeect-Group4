@@ -10,7 +10,7 @@
 - `code/backend/`：Flask API；`app.py` 定義路由，`environment.yml` 管理 Conda 環境。
 - `題目/`：作業規格與文字版本。
 
-目前前端仍是 Vite 模板。後端提供 `/api/health`、`/api/search` 與記憶體搜尋核心，正式 SQLite 資料與離線索引尚待串接。
+目前前端仍是 Vite 模板。後端提供 `/api/health`、`/api/search` 與記憶體搜尋核心。爬蟲 SQLite 資料可透過預覽入口查詢，正式離線索引尚待串接。
 
 ## 架構與協作邊界
 
@@ -91,6 +91,14 @@ python -m flask --app app run --debug
 ```
 
 既有環境以 `conda env update --name IRandGAI -f environment.yml` 同步，使用 Python 3.12。前後端各開一個終端機。
+
+在 `code/backend` 用下列命令預覽爬蟲資料，再查詢 `/api/search?q=SQL`：
+
+```powershell
+python -m flask --app sqlite_preview:create_preview_app run --debug
+```
+
+預覽以唯讀方式載入 `code/backend/data/documents.db`，使用上面的測試斷詞與 TF-IDF 規則在啟動時建立記憶體索引。SQLite 資料更新後須重啟。正式離線索引完成前，預設 `--app app` 的搜尋端點仍回傳 `503`。
 
 ## 程式風格與命名
 

@@ -1,5 +1,6 @@
 
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -63,7 +64,7 @@ def get_document_count():
 def get_all_documents():
     """取得資料庫中的所有文件"""
 
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(f"{DB_PATH.as_uri()}?mode=ro", uri=True)) as conn:
         conn.row_factory = sqlite3.Row
 
         cursor = conn.execute("""
