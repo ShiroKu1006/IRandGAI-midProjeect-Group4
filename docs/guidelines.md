@@ -10,16 +10,55 @@
 - `code/backend/`：Flask API；`app.py` 定義路由，`environment.yml` 管理 Conda 環境。
 - `題目/`：作業規格與文字版本。
 
-目前只有前端模板與 `/api/health`，尚無搜尋核心、資料庫、索引、評估流程或 `/api` 代理。以下架構是後續開發方向，不代表已實作。
+目前前端仍是 Vite 模板。後端提供 `/api/health`、`/api/search` 與記憶體搜尋核心，正式 SQLite 資料與離線索引尚待串接。
 
 ## 架構與協作邊界
 
-- **離線流程**：種子網址 → 爬蟲 → 資料集 → 前處理 → 索引檔。建議採 SQLite 儲存 `doc_id`、`url`、`title`、`text`、`fetch_time`；題目也允許 JSON。
+- **離線流程**：以 PostgreSQL 官方文件為搜尋語料，爬取後存入 SQLite，再做前處理並產出索引檔。文件欄位建議包含 `doc_id`、`url`、`title`、`text`、`fetch_time`。
 - **查詢流程**：React → Flask API → 搜尋核心 → 既有索引與資料集。啟動時載入索引，不在查詢期間爬取、重建索引或重新擬合 IDF。
-- **模組分工**：後續在 `code/backend/` 拆分 `crawler.py`、`indexer.py`、`search.py`、共用前處理及評估模組；`app.py` 保持為 API 層。文件與查詢共用前處理，API 與評估共用搜尋核心。
-- **整合契約**：跨模組開發前，先約定穩定的 `doc_id`、資料／索引格式、搜尋函式及 API 回應。`search(query, top_k=10)`、`GET /api/search?q=...` 是建議介面，尚未建立；前端可先使用符合契約的範例資料。
+- **模組分工**：`app.py` 負責 API，`search.py` 負責查詢排序。爬蟲、離線建索引、共用前處理及評估各自拆分。文件與查詢共用前處理，API 與評估共用搜尋核心。
+- **索引交付**：離線建索引從 SQLite 文件產出倒排索引與文件集合統計。交付時須對齊穩定的 `doc_id`、共用前處理、TF／IDF 定義、postings（詞對應文件 ID 與詞頻）、文件頻率和文件向量 L2 範數。正式 SQLite 欄位及索引檔格式待資料集、索引與搜尋負責人確認。
+- **搜尋介面**：`SearchIndex` 接收同一份索引快照的文件、postings、IDF、文件範數及前處理函式。`search(query, top_k=10)` 回傳 `(indexed_count, hits)`，核心結果保留 `doc_id` 供評估使用。現階段核心以原始詞頻乘上交付的 IDF 計算權重。測試專用斷詞為小寫英數及底線，測試 IDF 為 `ln((N+1)/(df+1))+1`。正式前處理與權重定義仍待組員對齊。
 
 小組依爬蟲、索引、搜尋／API、前端／評估分工，相關性判定共同參與。先完成必做檢索流程與本機展示，再考慮 BM25 等加分項目。
+
+## 搜尋 API 契約
+
+前端呼叫 `GET /api/search?q=SQL`。`q` 為必填的查詢字串，應做 URL 編碼。後端去除查詢的首尾空白後再驗證與搜尋。開發期間可先使用下列 JSON 範例。
+
+**有命中（`200`）**。 `indexed_count` 是索引涵蓋的文件總數。`results` 最多包含 10 筆正分結果，依分數由高到低排列，同分依 `doc_id` 升冪。每筆結果包含 `title`、`url`、純文字 `snippet` 和數值 `score`。摘要合併連續空白後取前 160 字元。
+
+```json
+{
+  "indexed_count": 3,
+  "results": [
+    {
+      "title": "PostgreSQL Indexes",
+      "url": "https://www.postgresql.org/docs/18/indexes.html",
+      "snippet": "Indexes can help retrieve rows faster.",
+      "score": 0.82
+    }
+  ]
+}
+```
+
+**未命中（`200`）**
+
+```json
+{"indexed_count": 3, "results": []}
+```
+
+**缺少 `q` 或去除首尾空白後為空字串（`400`）**
+
+```json
+{"error": "invalid_query"}
+```
+
+**有效查詢但搜尋核心尚未配置（`503`）**
+
+```json
+{"error": "search_unavailable"}
+```
 
 ## 檢索與資料規範
 
@@ -61,7 +100,15 @@ python -m flask --app app run --debug
 
 ## 測試與驗證
 
-目前沒有測試框架、測試目錄、`npm test` 或 coverage 門檻。前端變更執行 build、lint 並檢查畫面；搜尋核心以可手算的小型資料驗證分數與邊界情況。啟動後端後，另開 PowerShell 驗證：
+前端變更執行 build、lint 並檢查畫面。後端測試使用標準函式庫 `unittest` 與 Flask test client。在 `IRandGAI` 環境中，從 `code/backend` 執行：
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+搜尋／API 的第一個里程碑先以固定結果驗證 HTTP 狀態碼與回應格式，再用 3～5 篇測試文件和一份可手算的小索引，讓 API 跑過候選篩選、TF-IDF 與餘弦排序。核對分數、排名、無結果和空白查詢。這兩步可在前端和正式 SQLite 資料就緒前完成。
+
+啟動後端後，另開 PowerShell 驗證：
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:5000/api/health
