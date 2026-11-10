@@ -1,16 +1,13 @@
+import argparse
+import json
 
-from urllib.parse import urljoin, urlsplit, urlunsplit
+from urllib.parse import unquote, urljoin, urlsplit, urlunsplit
 from collections import deque
 from bs4 import BeautifulSoup
 import requests
 from urllib.robotparser import RobotFileParser
 import time
-from database import (
-    init_database,
-    save_document,
-    get_document_count,
-    get_all_documents
-)
+from database import init_database, save_document
 import logging
 from pathlib import Path
 from email.utils import parsedate_to_datetime
@@ -34,27 +31,12 @@ HEADERS = {
 
 # 文件路徑
 ALLOWED_PATH_PREFIXES = (
-    "/docs/",
+    "/docs/18/",
 )
 # Retry 設定
 MAX_ATTEMPTS_PER_URL = 3
 
 # Log 檔案位置
-LOG_DIR = Path(__file__).resolve().parent / "logs"
-LOG_DIR.mkdir(parents=True, exist_ok=True)
-
-LOG_FILE = LOG_DIR / "crawler.log"
-
-# Logging 設定
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_FILE, encoding="utf-8"),
-        logging.StreamHandler()
-    ]
-)
-
 logger = logging.getLogger(__name__)
 MAX_TOTAL_ATTEMPTS = 3000
 
@@ -153,7 +135,7 @@ def is_allowed_url(url):
     檢查網址是否符合爬取範圍：
     1. HTTP / HTTPS
     2. hostname 必須在白名單
-    3. 路徑必須位於 /docs/ 下
+    3. 路徑必須位於 /docs/18/ 下
     """
 
     if not url:
@@ -169,6 +151,11 @@ def is_allowed_url(url):
             return False
 
         if not parsed.path.startswith(ALLOWED_PATH_PREFIXES):
+            return False
+
+        # requests can normalize dot segments before sending the URL.
+        decoded_path = unquote(parsed.path)
+        if "\\" in decoded_path or any(part in {".", ".."} for part in decoded_path.split("/")):
             return False
 
         return True
@@ -260,6 +247,7 @@ def load_robots_parser():
     """
     robots_url = "https://www.postgresql.org/robots.txt"
 
+    wait_for_host(urlsplit(robots_url).hostname)
     response = requests.get(
         robots_url,
         headers=HEADERS,
@@ -647,97 +635,111 @@ def get_retry_delay(response, attempt):
     # 最少等待 2 秒，最多等待 60 秒
     return min(max(delay, 2), 60)
 
-def run_crawler(seed_urls, max_documents=200):
-    print("\nStarting crawler...")
-    print(f"Target documents: {max_documents}\n")
+DOC_ROOT = "https://www.postgresql.org/docs/18/"
+SEED_URLS = tuple(
+    DOC_ROOT + page for page in (
+        "sql-commands.html", "datatype.html", "sql-createtable.html",
+        "ddl-constraints.html", "datatype-json.html", "transaction-iso.html",
+        "tutorial-window.html", "sql-vacuum.html",
+    )
+)
+DEFAULT_SNAPSHOT_DB = Path(__file__).resolve().parent / "data" / "documents-pg18.db"
 
-    init_database()
 
-    robots_parser = load_robots_parser()
+def run_crawler(seed_urls, max_documents=250, *, db_path=DEFAULT_SNAPSHOT_DB):
+    if not 1 <= max_documents <= 1000:
+        raise ValueError("max_documents must be between 1 and 1000")
 
-    frontier = URLFrontier()
+    db_path = Path(db_path)
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    # Reserve this path exclusively before any network request.
+    db_path.touch(exist_ok=False)
+    init_database(db_path)
+
     request_budget = RequestBudget()
-
+    request_budget.consume()  # robots.txt is the first HTTP request.
+    robots_parser = load_robots_parser()
+    frontier = URLFrontier()
     for url in seed_urls:
         frontier.add(url)
 
-    skipped_count = 0
-
+    seen_urls = set()
+    seen_text = set()
+    failures = 0
+    duplicates = 0
+    total_bytes = 0
     while (
         not frontier.is_empty()
-        and get_document_count() < max_documents
+        and len(seen_urls) < max_documents
         and request_budget.remaining() > 0
     ):
         url = frontier.pop_next()
+        if url in seen_urls:
+            continue
 
-        result = fetch_page(
-            url,
-            robots_parser,
-            request_budget=request_budget
-        )
-
+        result = fetch_page(url, robots_parser, request_budget=request_budget)
         if result is None:
-            skipped_count += 1
-
-            if request_budget.remaining() <= 0:
-                break
-
+            failures += 1
             continue
 
-        document = parse_page(
-            result["html"],
-            result["url"]
-        )
-
-        if not document or not document["text"].strip():
-            skipped_count += 1
-            continue
-
-        save_document(document)
-
-        links = extract_links(
-            result["html"],
-            result["url"]
-        )
-
-        for link in links:
+        for link in sorted(extract_links(result["html"], result["url"])):
             frontier.add(link)
 
-        # 顯示目前進度
-        current_count = get_document_count()
+        if result["url"] in seen_urls:
+            continue
+        document = parse_page(result["html"], result["url"])
+        if not document or not document["text"].strip():
+            failures += 1
+            continue
 
-        print(
-            f"\rProgress: {current_count:4d} / {max_documents} "
-            f"| Requests: {request_budget.attempts:4d} / "
-            f"{request_budget.max_attempts}",
-            end="",
-            flush=True
+        normalized_text = " ".join(document["text"].split())
+        if normalized_text in seen_text:
+            duplicates += 1
+            logger.info("[SKIP] Duplicate body: %s", result["url"])
+            continue
+
+        save_document(document, db_path)
+        seen_urls.add(document["url"])
+        seen_text.add(normalized_text)
+        total_bytes += len(document["text"].encode("utf-8"))
+
+    return {
+        "http_attempts": request_budget.attempts,
+        "documents": len(seen_urls),
+        "hosts": sorted({urlsplit(url).hostname for url in seen_urls}),
+        "failed_pages": failures,
+        "duplicate_bodies": duplicates,
+        "average_body_bytes": round(total_bytes / len(seen_urls), 2) if seen_urls else 0,
+        "missing_seeds": sorted(set(seed_urls) - seen_urls),
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Crawl PostgreSQL 18 documentation")
+    parser.add_argument("--db", type=Path, default=DEFAULT_SNAPSHOT_DB)
+    parser.add_argument("--max-documents", type=int, default=250)
+    args = parser.parse_args()
+    if args.db.exists():
+        parser.error(f"Database already exists: {args.db}")
+    if not 200 <= args.max_documents <= 1000:
+        parser.error("--max-documents must be between 200 and 1000")
+
+    args.db.parent.mkdir(parents=True, exist_ok=True)
+    log_path = args.db.with_suffix(".crawl.log")
+    print(f"Crawling up to {args.max_documents} pages. Follow {log_path} for progress.", flush=True)
+    with log_path.open("a", encoding="utf-8") as crawl_log:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s [%(levelname)s] %(message)s",
+            stream=crawl_log,
         )
+        summary = run_crawler(SEED_URLS, args.max_documents, db_path=args.db)
+        serialized = json.dumps(summary, indent=2)
+        logger.info("[SUMMARY] %s", serialized)
+        print(serialized)
+    if summary["documents"] < 200 or summary["missing_seeds"]:
+        raise SystemExit("Snapshot incomplete; review the crawl log.")
 
-    print("\n\nCrawler finished.")
-    print(f"Documents: {get_document_count()}")
-    print(f"HTTP requests: {request_budget.attempts}")
 
 if __name__ == "__main__":
-    seed_urls = [
-        # SQL 指令參考文件
-        "https://www.postgresql.org/docs/current/sql-select.html",
-
-        # 教學文件
-        "https://www.postgresql.org/docs/current/tutorial-window.html",
-
-        # 其他文件
-        "https://www.postgresql.org/docs/current/queries-with.html",
-        "https://www.postgresql.org/docs/current/sql-keywords-appendix.html",
-
-        # 不同版本的 SELECT 文件
-        "https://www.postgresql.org/docs/16/sql-select.html",
-        "https://www.postgresql.org/docs/14/sql-select.html",
-        "https://www.postgresql.org/docs/9.5/sql-select.html",
-        "https://www.postgresql.org/docs/8.1/sql-select.html"
-    ]
-
-    run_crawler(
-        seed_urls=seed_urls,
-        max_documents=200
-    )
+    main()

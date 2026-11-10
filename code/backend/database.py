@@ -9,12 +9,12 @@ from datetime import datetime, timezone
 DB_PATH = Path(__file__).resolve().parent / "data" / "documents.db"
 
 
-def init_database():
+def init_database(db_path=DB_PATH):
     """初始化資料庫與 documents 資料表"""
 
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    db_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with sqlite3.connect(DB_PATH) as conn:
+    with sqlite3.connect(db_path) as conn:
         conn.execute("""
             CREATE TABLE IF NOT EXISTS documents (
                 doc_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,14 +28,14 @@ def init_database():
 
 
 
-def save_document(document):
+def save_document(document, db_path=DB_PATH):
     """新增或更新一筆文件"""
 
     fetch_time = datetime.now(timezone.utc).isoformat(
         timespec="seconds"
     )
 
-    with sqlite3.connect(DB_PATH) as conn:
+    with sqlite3.connect(db_path) as conn:
         conn.execute("""
             INSERT INTO documents (url, title, text, fetch_time)
             VALUES (?, ?, ?, ?)
@@ -52,19 +52,19 @@ def save_document(document):
 
 
 
-def get_document_count():
+def get_document_count(db_path=DB_PATH):
     """取得目前資料庫中的文件數量"""
 
-    with sqlite3.connect(DB_PATH) as conn:
+    with sqlite3.connect(db_path) as conn:
         cursor = conn.execute(
             "SELECT COUNT(*) FROM documents"
         )
         return cursor.fetchone()[0]
 
-def get_all_documents():
+def get_all_documents(db_path=DB_PATH):
     """取得資料庫中的所有文件"""
 
-    with closing(sqlite3.connect(f"{DB_PATH.as_uri()}?mode=ro", uri=True)) as conn:
+    with closing(sqlite3.connect(f"{db_path.resolve().as_uri()}?mode=ro", uri=True)) as conn:
         conn.row_factory = sqlite3.Row
 
         cursor = conn.execute("""

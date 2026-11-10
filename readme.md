@@ -89,7 +89,7 @@ Python 應為 3.12.x，執行檔路徑應指向 `IRandGAI` 環境。
 接續上一步，目前已位於 `code/backend`：
 
 ```powershell
-python -m flask --app app run --debug
+python -m flask --app indexed_app:create_indexed_app run --debug
 ```
 
 開啟 `http://127.0.0.1:5000/api/health`，預期會收到：
@@ -98,7 +98,7 @@ python -m flask --app app run --debug
 {"status": "ok"}
 ```
 
-這個端點用來確認後端服務已啟動。直接開啟 `/` 目前會得到 404，因為程式只設定了 `/api/health` 路由。
+這個端點用來確認後端服務已啟動。搜尋 API 可用 `/api/search?q=VACUUM` 測試。
 
 保持後端終端機運作，按 `Ctrl+C` 可停止服務。`--debug` 用於本機開發，修改程式後會自動重新載入。
 
@@ -118,10 +118,54 @@ npm.cmd run dev
 ```powershell
 conda activate IRandGAI
 cd code/backend
-python -m flask --app app run --debug
+python -m flask --app indexed_app:create_indexed_app run --debug
 ```
 
-目前 Vite 尚未設定 `/api` 代理，前端也尚未串接 Flask。兩個服務都能啟動，只代表各自的基本環境正常；後端先透過 `/api/health` 獨立確認。
+Vite 會將 `/api` 代理至 `http://127.0.0.1:5000`。在前端網址輸入查詢即可展示。
+
+## PostgreSQL 18 語料與新版 demo
+
+爬蟲只追蹤 `www.postgresql.org` 的 `/docs/18/`，重新導向也必須在範圍內。種子網址為 `https://www.postgresql.org/docs/18/` 加上下列頁面檔名。
+
+- `sql-commands.html`、`datatype.html`
+- `sql-createtable.html`、`ddl-constraints.html`、`datatype-json.html`
+- `transaction-iso.html`、`tutorial-window.html`、`sql-vacuum.html`
+
+從 `code/backend` 重爬時，使用尚未存在的檔名，例如：
+
+```powershell
+conda activate IRandGAI
+python crawler.py --db data/documents-pg18-next.db --max-documents 250
+if ($LASTEXITCODE -eq 0) {
+    python indexer.py --db data/documents-pg18-next.db --out data/index-pg18-next.json
+}
+```
+
+爬蟲保留正規化 URL 唯一約束，並略過空白正規化後完全相同的正文。爬取摘要在同名的 `.crawl.log` 檔案末尾。有效頁不足 200 筆或缺少任一種子時，爬蟲以錯誤狀態結束，應先檢查紀錄再換新檔名重爬。
+
+新版交付快照為 `data/documents-pg18.db`、`data/index-pg18.json` 和 `data/documents-pg18.crawl.log`。在後端終端機選擇新版索引：
+
+```powershell
+$env:SEARCH_INDEX_PATH = 'data/index-pg18.json'
+python -m flask --app indexed_app:create_indexed_app run --port 5000
+```
+
+簡報要比較舊版時，先停止 Flask，再設定 `$env:SEARCH_INDEX_PATH = 'data/index.json'` 並重新啟動。舊版 SQLite 位於 `data/documents.db`。比較時可用 `CREATE TABLE`、`jsonb`、`window functions` 看收錄與排名差異。
+
+### 快照比較
+
+新版收錄 250 篇 PostgreSQL 18 文件，8 個種子全數收錄。以相同的 TF-IDF 餘弦排序比較兩版索引，對應專頁的名次如下。
+
+| 查詢 | 對應專頁 | 舊版 | 新版 |
+| --- | --- | ---: | ---: |
+| `CREATE TABLE` | CREATE TABLE | 未收錄 | 6 |
+| `foreign key constraint` | Constraints | 未收錄 | 2 |
+| `transaction isolation` | Transaction Isolation | 3 | 2 |
+| `jsonb` | JSON Types | 未收錄 | 1 |
+| `window functions` | Window Functions | 1 | 1 |
+| `VACUUM` | VACUUM | 1 | 1 |
+
+舊版的 `window functions` 前十筆都是同一篇的不同版本，新版前十筆各自對應不同頁面。`CREATE TABLE` 新版第一筆是 `CREATE TABLE AS`，反映餘弦排序仍會把共用詞彙較多的文件排在前面。這張表記錄指定專頁名次，供 demo 比較。
 
 ## 前端檢查
 

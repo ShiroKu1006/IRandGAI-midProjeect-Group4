@@ -115,7 +115,7 @@ class SearchIndexTests(unittest.TestCase):
         count, hits = index.search("sql", top_k=20)
         self.assertEqual(count, 12)
         self.assertEqual([hit["doc_id"] for hit in hits], list(range(1, 11)))
-        self.assertEqual(hits[0]["snippet"], "sql " + "x" * 156)
+        self.assertEqual(hits[0]["snippet"], "sql " + "x" * 200)
         self.assertEqual(len(index.search("sql", top_k=2)[1]), 2)
 
     def test_zero_weight_query_returns_no_hits(self):

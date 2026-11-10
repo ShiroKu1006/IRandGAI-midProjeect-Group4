@@ -44,7 +44,7 @@ class SearchIndex:
                 "doc_id": doc_id,
                 "title": document["title"],
                 "url": document["url"],
-                "snippet": " ".join(document["text"].split())[:160],
+                "snippet": " ".join(document["text"].split()[:75]),
                 "score": score,
             })
         return indexed_count, hits

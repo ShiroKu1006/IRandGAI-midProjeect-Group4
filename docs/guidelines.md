@@ -10,7 +10,7 @@
 - `code/backend/`：Flask API；`app.py` 定義路由，`environment.yml` 管理 Conda 環境。
 - `題目/`：作業規格與文字版本。
 
-目前前端仍是 Vite 模板。後端提供 `/api/health`、`/api/search` 與記憶體搜尋核心。爬蟲 SQLite 資料可透過預覽入口查詢，正式離線索引尚待串接。
+前端透過 Vite 的 `/api` 代理呼叫 Flask。後端提供 `/api/health` 和 `/api/search`，demo 入口於啟動時載入離線索引。
 
 ## 架構與協作邊界
 
@@ -26,7 +26,7 @@
 
 前端呼叫 `GET /api/search?q=SQL`。`q` 為必填的查詢字串，應做 URL 編碼。後端去除查詢的首尾空白後再驗證與搜尋。開發期間可先使用下列 JSON 範例。
 
-**有命中（`200`）**。 `indexed_count` 是索引涵蓋的文件總數。`results` 最多包含 10 筆正分結果，依分數由高到低排列，同分依 `doc_id` 升冪。每筆結果包含 `title`、`url`、純文字 `snippet` 和數值 `score`。摘要合併連續空白後取前 160 字元。
+**有命中（`200`）**。 `indexed_count` 是索引涵蓋的文件總數。`results` 最多包含 10 筆正分結果，依分數由高到低排列，同分依 `doc_id` 升冪。每筆結果包含 `title`、`url`、純文字 `snippet` 和數值 `score`。摘要合併連續空白後取前 75 個以空白分隔的詞。
 
 ```json
 {
@@ -87,7 +87,7 @@ npm.cmd run preview  # 預覽已建置的前端
 ```powershell
 conda env create -f environment.yml
 conda activate IRandGAI
-python -m flask --app app run --debug
+python -m flask --app indexed_app:create_indexed_app run --debug
 ```
 
 既有環境以 `conda env update --name IRandGAI -f environment.yml` 同步，使用 Python 3.12。前後端各開一個終端機。
@@ -98,7 +98,7 @@ python -m flask --app app run --debug
 python -m flask --app sqlite_preview:create_preview_app run --debug
 ```
 
-預覽以唯讀方式載入 `code/backend/data/documents.db`，使用上面的測試斷詞與 TF-IDF 規則在啟動時建立記憶體索引。SQLite 資料更新後須重啟。正式離線索引完成前，預設 `--app app` 的搜尋端點仍回傳 `503`。
+預覽以唯讀方式載入舊版 `code/backend/data/documents.db`，在啟動時建立記憶體索引。新版 demo 使用離線索引，從 `code/backend` 設定 `SEARCH_INDEX_PATH` 為 `data/index-pg18.json` 後啟動 `indexed_app:create_indexed_app`。單獨使用 `--app app` 時，搜尋端點會回傳 `503`。
 
 ## 程式風格與命名
 
