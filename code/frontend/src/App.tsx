@@ -1,122 +1,89 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import { useRef, useState } from 'react'
 import './App.css'
+import { searchDocuments } from './api.ts'
+import type { SearchResponse } from './api.ts'
+import ResultList from './ResultList.tsx'
+import SearchBar from './SearchBar.tsx'
 
-function App() {
-  const [count, setCount] = useState(0)
+type SearchState =
+  | { status: 'idle' }
+  | { status: 'empty' }
+  | { status: 'loading' }
+  | { status: 'done'; response: SearchResponse }
+  | { status: 'error'; message: string }
+
+export default function App() {
+  const [state, setState] = useState<SearchState>({ status: 'idle' })
+  const [indexedCount, setIndexedCount] = useState<number | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
+
+  async function handleSearch(rawQuery: string) {
+    abortRef.current?.abort()
+    const query = rawQuery.trim()
+    if (!query) {
+      setState({ status: 'empty' })
+      return
+    }
+
+    const controller = new AbortController()
+    abortRef.current = controller
+    setState({ status: 'loading' })
+
+    try {
+      const response = await searchDocuments(query, controller.signal)
+      if (controller.signal.aborted) return
+      // 已索引頁數來自搜尋回應的 indexed_count（後端沒有獨立的 stats 端點）
+      setIndexedCount(response.indexedCount)
+      setState({ status: 'done', response })
+    } catch (error) {
+      if (controller.signal.aborted) return
+      const message = error instanceof Error ? error.message : '未知錯誤'
+      setState({ status: 'error', message })
+    }
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+    <main className="app">
+      <header className="app-header">
+        <h1>Web Search Engine</h1>
+        <p className="app-subtitle">
+          {indexedCount === null
+            ? '小型主題式搜尋引擎'
+            : `已索引 ${indexedCount} 個網頁`}
+        </p>
+      </header>
+
+      <SearchBar loading={state.status === 'loading'} onSearch={handleSearch} />
+
+      <section className="app-content" aria-live="polite">
+        {state.status === 'idle' && (
+          <p className="message">輸入關鍵字開始搜尋。</p>
+        )}
+        {state.status === 'empty' && (
+          <p className="message message-warning">請輸入至少一個關鍵字。</p>
+        )}
+        {state.status === 'loading' && <p className="message">搜尋中…</p>}
+        {state.status === 'error' && (
+          <p className="message message-error">
+            搜尋失敗：{state.message}
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+        )}
+        {state.status === 'done' && (
+          <>
+            <p className="summary">
+              「{state.response.query}」共 {state.response.results.length} 筆結果
+              （從 {state.response.indexedCount} 個已索引網頁中）
+            </p>
+            {state.response.results.length === 0 ? (
+              <p className="message">
+                找不到符合「{state.response.query}」的結果，請換個關鍵字再試試。
+              </p>
+            ) : (
+              <ResultList results={state.response.results} />
+            )}
+          </>
+        )}
       </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    </main>
   )
 }
-
-export default App
