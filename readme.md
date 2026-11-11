@@ -163,12 +163,11 @@ if ($LASTEXITCODE -eq 0) {
 python -m flask --app indexed_app:create_indexed_app run --port 5000
 ```
 
-簡報要比較舊版時，先停止 Flask，再設定 `$env:SEARCH_INDEX_PATH = 'data/index.json'` 並重新啟動。要恢復新版預設，清除該環境變數後重新啟動。舊版 SQLite 位於 `data/documents.db`。比較時可用 `CREATE TABLE`、`jsonb`、`window functions` 看收錄與排名差異。
-舊版索引（`data/index.json`）已移除，預設索引改為 `data/index-pg18.json`，不需再設定 `SEARCH_INDEX_PATH`。舊版 SQLite 仍保留在 `data/documents.db`；下方「快照比較」表保留當時的名次紀錄。
+Flask 預設載入 `data/index-pg18.json`。若目前的 PowerShell 曾將 `SEARCH_INDEX_PATH` 指向已移除的舊版索引 `data/index.json`，請先清除該環境變數再啟動 Flask。舊版 SQLite 仍保留在 `data/documents.db`。簡報可參考下方「快照比較」的歷史排名。
 
 ### 快照比較
 
-新版收錄 250 篇 PostgreSQL 18 文件，8 個種子全數收錄。以相同的 TF-IDF 餘弦排序比較兩版索引，對應專頁的名次如下。
+新版收錄 250 篇 PostgreSQL 18 文件，8 個種子全數收錄。下表記錄當時以相同的 TF-IDF 餘弦排序比較兩版索引所得的名次。
 
 | 查詢 | 對應專頁 | 舊版 | 新版 |
 | --- | --- | ---: | ---: |
