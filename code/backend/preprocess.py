@@ -10,11 +10,11 @@ STOPWORDS = frozenset(
 )
 
 
-def tokenize(text: str) -> list[str]:
+def tokenize(text: str, *, keep_stopwords: bool = False) -> list[str]:
     """把文字切成詞的列表（保留重複，順序與原文一致）。"""
     tokens = TOKEN_PATTERN.findall(text.lower())
     return [
         token
         for token in tokens
-        if token not in STOPWORDS and token.strip("_")
+        if token.strip("_") and (keep_stopwords or token not in STOPWORDS)
     ]

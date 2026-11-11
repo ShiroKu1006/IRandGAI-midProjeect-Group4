@@ -3,6 +3,7 @@ import re
 import unittest
 
 import app
+from indexer import build_index, to_search_index
 
 
 class SearchApiTests(unittest.TestCase):
@@ -56,6 +57,59 @@ def document(text):
         "url": "https://www.postgresql.org/docs/18/",
         "text": text,
     }
+
+
+class PhraseSearchTests(unittest.TestCase):
+    @staticmethod
+    def _client(texts):
+        documents = [
+            {**document(text), "doc_id": doc_id, "url": f"https://example.com/{doc_id}"}
+            for doc_id, text in enumerate(texts, start=1)
+        ]
+        index = to_search_index(build_index(documents))
+        return app.create_app(search=index.search).test_client()
+
+    def test_phrase_requires_adjacent_terms_in_order(self):
+        client = self._client([
+            "CREATE\nTABLE users", "CREATE TEMPORARY TABLE users", "TABLE CREATE", "CREATE",
+        ])
+        ordinary = client.get("/api/search", query_string={"q": "create table"}).json
+        self.assertEqual(len(ordinary["results"]), 4)
+
+        response = client.get("/api/search", query_string={"q": '"create table"'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["indexed_count"], 4)
+        self.assertEqual(
+            [hit["snippet"] for hit in response.json["results"]], ["CREATE TABLE users"]
+        )
+        ordinary_hit = next(
+            hit for hit in ordinary["results"] if hit["url"] == "https://example.com/1"
+        )
+        self.assertEqual(response.json["results"][0]["score"], ordinary_hit["score"])
+
+    def test_phrase_preserves_stopwords_for_matching(self):
+        client = self._client(["ORDER BY date", "ORDER the rows BY date", "ORDER BYPASS"])
+        response = client.get("/api/search", query_string={"q": '"order by"'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            [hit["snippet"] for hit in response.json["results"]], ["ORDER BY date"]
+        )
+
+    def test_phrase_is_filtered_before_the_result_limit(self):
+        client = self._client(["TABLE CREATE"] * 10 + ["CREATE TABLE users"])
+        response = client.get("/api/search", query_string={"q": '"create table"'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            [hit["snippet"] for hit in response.json["results"]], ["CREATE TABLE users"]
+        )
+
+    def test_empty_stopword_only_and_out_of_vocabulary_phrases_have_no_hits(self):
+        client = self._client(["ORDER BY the date"])
+        for query in ('""', '"   "', '"by the"', '"unknown order"'):
+            with self.subTest(query=query):
+                response = client.get("/api/search", query_string={"q": query})
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json, {"indexed_count": 1, "results": []})
 
 
 class SearchIndexTests(unittest.TestCase):
