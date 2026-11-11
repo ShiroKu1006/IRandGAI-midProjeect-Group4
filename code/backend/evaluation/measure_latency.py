@@ -1,24 +1,3 @@
-"""Measure search latency of the in-memory search core.
-
-Usage (from code/backend): python -m evaluation.measure_latency [--runs 50] [--warmup 3]
-
-Timing scope (what one sample measures)
-  Start : SearchIndex.search(query, top_k=10) is called with the raw query string.
-  End   : it returns the (indexed_count, hits) tuple.
-  Included : tokenizing + stopword removal, query TF-IDF weights, posting-list
-             accumulation, cosine scoring, sorting, building top-10 hit dicts
-             (title / url / 75-word snippet taken from the in-memory documents).
-  Excluded : index loading (done once at startup, reported separately),
-             database access, Flask / HTTP round trip, JSON encoding, frontend.
-
-Method
-  * Same 10 frozen queries as the Precision@5 evaluation (queries.json).
-  * Index is loaded once before timing; each query gets `--warmup` untimed runs,
-    then `--runs` timed runs with time.perf_counter_ns(). GC is paused while timing.
-  * Statistics are computed over all samples (queries x runs) and per query.
-
-Writes evaluation/latency_results.json and evaluation/latency_results.md.
-"""
 import argparse
 import gc
 import hashlib
