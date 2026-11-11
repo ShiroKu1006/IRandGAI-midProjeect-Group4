@@ -102,6 +102,20 @@ python -m flask --app indexed_app:create_indexed_app run --debug
 
 保持後端終端機運作，按 `Ctrl+C` 可停止服務。`--debug` 用於本機開發，修改程式後會自動重新載入。
 
+### 3. 試用片語搜尋（加分項目）
+
+在搜尋框輸入 `"create table"`，整個查詢用一對英文雙引號包住，即可要求內文中的詞依序相鄰。例如 `CREATE TABLE users` 會命中，`CREATE TEMPORARY TABLE users` 和 `TABLE CREATE` 不會。直接輸入 `create table` 則使用一般關鍵字搜尋。
+
+也可以直接比較 API 回應：
+
+```powershell
+Invoke-RestMethod 'http://127.0.0.1:5000/api/search?q=create%20table'
+Invoke-RestMethod 'http://127.0.0.1:5000/api/search?q=%22create%20table%22'
+Invoke-RestMethod 'http://127.0.0.1:5000/api/search?q=%22order%20by%22'
+```
+
+後端先取片語中非停用詞的倒排索引交集，再對候選文件的內文斷詞，驗證是否有一段連續詞彙和片語完全相同。比對忽略大小寫，保留 `by` 等停用詞，並依斷詞規則處理標點和空白。通過驗證的文件用 TF-IDF 餘弦相似度排序，最多回傳 10 筆。空片語或全由停用詞組成的片語回傳零筆。現有的索引快照可直接使用。
+
 ## 之後每天開發怎麼啟動
 
 安裝完成後，通常不需要每天重裝套件。前後端各使用一個終端機，以下仍從 repository 根目錄開始。
@@ -149,15 +163,11 @@ if ($LASTEXITCODE -eq 0) {
 python -m flask --app indexed_app:create_indexed_app run --port 5000
 ```
 
-<<<<<<< HEAD
-簡報要比較舊版時，先停止 Flask，再設定 `$env:SEARCH_INDEX_PATH = 'data/index.json'` 並重新啟動。要恢復新版預設，清除該環境變數後重新啟動。舊版 SQLite 位於 `data/documents.db`。比較時可用 `CREATE TABLE`、`jsonb`、`window functions` 看收錄與排名差異。
-=======
-舊版索引（`data/index.json`）已移除，預設索引改為 `data/index-pg18.json`，不需再設定 `SEARCH_INDEX_PATH`。舊版 SQLite 仍保留在 `data/documents.db`；下方「快照比較」表保留當時的名次紀錄。
->>>>>>> ddb3a5f378e340e7790e764e2a13c960d574807b
+Flask 預設載入 `data/index-pg18.json`。若目前的 PowerShell 曾將 `SEARCH_INDEX_PATH` 指向已移除的舊版索引 `data/index.json`，請先清除該環境變數再啟動 Flask。舊版 SQLite 仍保留在 `data/documents.db`。簡報可參考下方「快照比較」的歷史排名。
 
 ### 快照比較
 
-新版收錄 250 篇 PostgreSQL 18 文件，8 個種子全數收錄。以相同的 TF-IDF 餘弦排序比較兩版索引，對應專頁的名次如下。
+新版收錄 250 篇 PostgreSQL 18 文件，8 個種子全數收錄。下表記錄當時以相同的 TF-IDF 餘弦排序比較兩版索引所得的名次。
 
 | 查詢 | 對應專頁 | 舊版 | 新版 |
 | --- | --- | ---: | ---: |

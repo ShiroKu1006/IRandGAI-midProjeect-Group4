@@ -1,6 +1,9 @@
+import re
 from collections import Counter, defaultdict
 from functools import cached_property
 from math import hypot, log1p
+
+from preprocess import tokenize
 
 
 BM25_K1 = 1.2
@@ -19,18 +22,28 @@ class SearchIndex:
 
     def search(self, query, top_k=10):
         indexed_count = len(self.documents)
+        quoted = re.fullmatch(r'"([^"]*)"', query.strip())
+        terms = Counter(tokenize(quoted[1]) if quoted else self.tokenize(query))
         query_weights = {
             term: frequency * self.idf[term]
-            for term, frequency in Counter(self.tokenize(query)).items()
+            for term, frequency in terms.items()
             if term in self.idf
         }
         query_norm = hypot(*query_weights.values())
         if query_norm == 0 or top_k <= 0:
             return indexed_count, []
 
+        phrase_matches = None
+        if quoted:
+            phrase_matches = self._phrase_matches(quoted[1], terms)
+            if not phrase_matches:
+                return indexed_count, []
+
         dot_products = defaultdict(float)
         for term, query_weight in query_weights.items():
             for doc_id, frequency in self.postings.get(term, {}).items():
+                if phrase_matches is not None and doc_id not in phrase_matches:
+                    continue
                 document_weight = frequency * self.idf[term]
                 dot_products[doc_id] += query_weight * document_weight
 
@@ -41,6 +54,22 @@ class SearchIndex:
                 score = dot_product / (query_norm * document_norm)
                 ranked.append((doc_id, score))
         return indexed_count, self._top_hits(ranked, top_k)
+
+    def _phrase_matches(self, phrase, terms):
+        phrase_tokens = tokenize(phrase, keep_stopwords=True)
+        width = len(phrase_tokens)
+        postings = [self.postings.get(term, {}) for term in terms]
+        matches = set()
+        for doc_id in min(postings, key=len):
+            if not all(doc_id in posting for posting in postings):
+                continue
+            tokens = tokenize(self.documents[doc_id]["text"], keep_stopwords=True)
+            if any(
+                tokens[start:start + width] == phrase_tokens
+                for start in range(len(tokens) - width + 1)
+            ):
+                matches.add(doc_id)
+        return matches
 
     @cached_property
     def _bm25_statistics(self):
