@@ -102,6 +102,20 @@ python -m flask --app indexed_app:create_indexed_app run --debug
 
 保持後端終端機運作，按 `Ctrl+C` 可停止服務。`--debug` 用於本機開發，修改程式後會自動重新載入。
 
+### 3. 試用片語搜尋（加分項目）
+
+在搜尋框輸入 `"create table"`，整個查詢用一對英文雙引號包住，即可要求內文中的詞依序相鄰。例如 `CREATE TABLE users` 會命中，`CREATE TEMPORARY TABLE users` 和 `TABLE CREATE` 不會。直接輸入 `create table` 則使用一般關鍵字搜尋。
+
+也可以直接比較 API 回應：
+
+```powershell
+Invoke-RestMethod 'http://127.0.0.1:5000/api/search?q=create%20table'
+Invoke-RestMethod 'http://127.0.0.1:5000/api/search?q=%22create%20table%22'
+Invoke-RestMethod 'http://127.0.0.1:5000/api/search?q=%22order%20by%22'
+```
+
+後端先取片語中非停用詞的倒排索引交集，再對候選文件的內文斷詞，驗證是否有一段連續詞彙和片語完全相同。比對忽略大小寫，保留 `by` 等停用詞，並依斷詞規則處理標點和空白。通過驗證的文件用 TF-IDF 餘弦相似度排序，最多回傳 10 筆。空片語或全由停用詞組成的片語回傳零筆。現有的索引快照可直接使用。
+
 ## 之後每天開發怎麼啟動
 
 安裝完成後，通常不需要每天重裝套件。前後端各使用一個終端機，以下仍從 repository 根目錄開始。
