@@ -143,14 +143,13 @@ if ($LASTEXITCODE -eq 0) {
 
 爬蟲保留正規化 URL 唯一約束，並略過空白正規化後完全相同的正文。爬取摘要在同名的 `.crawl.log` 檔案末尾。有效頁不足 200 筆或缺少任一種子時，爬蟲以錯誤狀態結束，應先檢查紀錄再換新檔名重爬。
 
-新版交付快照為 `data/documents-pg18.db`、`data/index-pg18.json` 和 `data/documents-pg18.crawl.log`。在後端終端機選擇新版索引：
+新版交付快照為 `data/documents-pg18.db`、`data/index-pg18.json` 和 `data/documents-pg18.crawl.log`。搜尋 API 與評估預設使用新版索引，SQLite 預覽、資料庫檢查與建索引預設讀取新版資料庫。從 `code/backend` 啟動：
 
 ```powershell
-$env:SEARCH_INDEX_PATH = 'data/index-pg18.json'
 python -m flask --app indexed_app:create_indexed_app run --port 5000
 ```
 
-簡報要比較舊版時，先停止 Flask，再設定 `$env:SEARCH_INDEX_PATH = 'data/index.json'` 並重新啟動。舊版 SQLite 位於 `data/documents.db`。比較時可用 `CREATE TABLE`、`jsonb`、`window functions` 看收錄與排名差異。
+簡報要比較舊版時，先停止 Flask，再設定 `$env:SEARCH_INDEX_PATH = 'data/index.json'` 並重新啟動。要恢復新版預設，清除該環境變數後重新啟動。舊版 SQLite 位於 `data/documents.db`。比較時可用 `CREATE TABLE`、`jsonb`、`window functions` 看收錄與排名差異。
 
 ### 快照比較
 

@@ -7,12 +7,12 @@ from collections.abc import Iterable
 from contextlib import closing
 from pathlib import Path
 
+from database import DB_PATH
 from preprocess import tokenize
 from search import SearchIndex
 
 BASE_DIR = Path(__file__).resolve().parent
-DEFAULT_DB_PATH = BASE_DIR / "data" / "documents.db"
-DEFAULT_INDEX_PATH = BASE_DIR / "data" / "index.json"
+DEFAULT_INDEX_PATH = BASE_DIR / "data" / "index-pg18.json"
 
 INDEX_FORMAT_VERSION = 1
 TF_SCHEME = "tf = raw term count"
@@ -159,7 +159,7 @@ def load_search_index(index_path: Path = DEFAULT_INDEX_PATH) -> SearchIndex:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="由爬蟲資料庫建立倒排索引")
-    parser.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
+    parser.add_argument("--db", type=Path, default=DB_PATH)
     parser.add_argument("--out", type=Path, default=DEFAULT_INDEX_PATH)
     args = parser.parse_args()
 
