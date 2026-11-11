@@ -94,7 +94,7 @@ def main():
 
     lines = [
         "# Search latency", "",
-        "Scope: `SearchIndex.search(query, top_k=10)` — raw query in, top-10 hits "
+        "Scope: `SearchIndex.search(query, top_k=10)` - raw query in, top-10 hits "
         "(title / url / snippet) out. Excludes index loading, database, Flask/HTTP, frontend.", "",
         f"Samples: {overall['n']} ({len(queries)} queries x {args.runs} runs, "
         f"{args.warmup} warm-up runs per query not counted). "
