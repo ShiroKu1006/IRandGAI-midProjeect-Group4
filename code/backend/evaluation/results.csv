@@ -1,0 +1,11 @@
+query_id,query,p_at_5,relevant,returned,distinct_pages
+q01,window functions,0.4,2,5,5
+q02,recursive common table expressions,0.2,1,5,5
+q03,transaction isolation levels,0.4,2,5,5
+q04,explicit table locks,0.2,1,5,5
+q05,how to get inserted rows back,0.0,0,5,5
+q06,array functions and operators,0.2,1,5,5
+q07,create view,0.2,1,5,5
+q08,reclaim storage from dead rows,0.4,2,5,5
+q09,sort rows order by,0.2,1,5,5
+q10,retry after serialization failure,0.2,1,5,5

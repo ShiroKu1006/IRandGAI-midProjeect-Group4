@@ -1,0 +1,51 @@
+query_id,query,rank,doc_id,url,title,score,relevant,reason
+q01,window functions,1,7,https://www.postgresql.org/docs/18/tutorial-window.html,3.5. Window Functions,0.4437,1,頁面專門介紹 window functions 與 OVER/PARTITION BY
+q01,window functions,2,245,https://www.postgresql.org/docs/18/functions-window.html,9.22. Window Functions,0.3831,1,9.22 列出內建 window functions
+q01,window functions,3,247,https://www.postgresql.org/docs/18/sql-expressions.html,4.2. Value Expressions,0.2032,0,Value Expressions 只有 Window Function Calls 一小節，主題是表達式
+q01,window functions,4,212,https://www.postgresql.org/docs/18/sql.html,Part II. The SQL Language,0.1473,0,Part II 的章節總覽，只提到一次
+q01,window functions,5,248,https://www.postgresql.org/docs/18/tutorial-advanced.html,Chapter 3. Advanced Features,0.1459,0,Chapter 3 目錄，只列出章名
+q02,recursive common table expressions,1,209,https://www.postgresql.org/docs/18/queries-with.html,7.8. WITH Queries (Common Table Expressions),0.2019,1,7.8 專門講 WITH 與 WITH RECURSIVE
+q02,recursive common table expressions,2,140,https://www.postgresql.org/docs/18/sql-droptable.html,DROP TABLE,0.1888,0,DROP TABLE 與 CTE 無關
+q02,recursive common table expressions,3,92,https://www.postgresql.org/docs/18/sql-createtableas.html,CREATE TABLE AS,0.1810,0,CREATE TABLE AS 與 CTE 無關
+q02,recursive common table expressions,4,236,https://www.postgresql.org/docs/18/indexes-expressional.html,11.7. Indexes on Expressions,0.1810,0,索引表達式，與 CTE 無關
+q02,recursive common table expressions,5,179,https://www.postgresql.org/docs/18/sql-selectinto.html,SELECT INTO,0.1800,0,SELECT INTO 只在語法列出 WITH [RECURSIVE]，不是主題
+q03,transaction isolation levels,1,6,https://www.postgresql.org/docs/18/transaction-iso.html,13.2. Transaction Isolation,0.3707,1,13.2 專門講隔離等級與其現象
+q03,transaction isolation levels,2,183,https://www.postgresql.org/docs/18/sql-set-transaction.html,SET TRANSACTION,0.3465,1,SET TRANSACTION 說明如何設定交易隔離等級（邊界：偏指令用法）
+q03,transaction isolation levels,3,186,https://www.postgresql.org/docs/18/sql-start-transaction.html,START TRANSACTION,0.2759,0,START TRANSACTION 只在語法列出 ISOLATION LEVEL
+q03,transaction isolation levels,4,54,https://www.postgresql.org/docs/18/sql-begin.html,BEGIN,0.2530,0,BEGIN 只在語法列出 ISOLATION LEVEL
+q03,transaction isolation levels,5,240,https://www.postgresql.org/docs/18/mvcc-intro.html,13.1. Introduction,0.2209,0,MVCC 簡介，幾乎沒談隔離等級
+q04,explicit table locks,1,238,https://www.postgresql.org/docs/18/explicit-locking.html,13.3. Explicit Locking,0.2991,1,13.3 專門講表層級與列層級鎖模式
+q04,explicit table locks,2,92,https://www.postgresql.org/docs/18/sql-createtableas.html,CREATE TABLE AS,0.2325,0,與鎖無關
+q04,explicit table locks,3,140,https://www.postgresql.org/docs/18/sql-droptable.html,DROP TABLE,0.2305,0,與鎖無關
+q04,explicit table locks,4,241,https://www.postgresql.org/docs/18/mvcc.html,Chapter 13. Concurrency Control,0.2259,0,Concurrency Control 章節目錄，只列章名
+q04,explicit table locks,5,244,https://www.postgresql.org/docs/18/view-pg-locks.html,53.13. pg_locks,0.2254,0,pg_locks 是查詢鎖狀態的系統視圖，不是在講鎖模式（邊界）
+q05,how to get inserted rows back,1,178,https://www.postgresql.org/docs/18/sql-select.html,SELECT,0.1116,0,SELECT 頁面，RETURNING 只是順帶出現
+q05,how to get inserted rows back,2,232,https://www.postgresql.org/docs/18/dml.html,Chapter 6. Data Manipulation,0.1081,0,Data Manipulation 目錄，只列出 6.4 的章名
+q05,how to get inserted rows back,3,173,https://www.postgresql.org/docs/18/sql-rollback-prepared.html,ROLLBACK PREPARED,0.1007,0,ROLLBACK PREPARED 與需求無關
+q05,how to get inserted rows back,4,174,https://www.postgresql.org/docs/18/sql-rollback-to.html,ROLLBACK TO SAVEPOINT,0.0966,0,ROLLBACK TO SAVEPOINT 與需求無關
+q05,how to get inserted rows back,5,7,https://www.postgresql.org/docs/18/tutorial-window.html,3.5. Window Functions,0.0894,0,Window Functions 與需求無關
+q06,array functions and operators,1,191,https://www.postgresql.org/docs/18/arrays.html,8.15. Arrays,0.4464,1,8.15 專門講陣列型別與操作
+q06,array functions and operators,2,212,https://www.postgresql.org/docs/18/sql.html,Part II. The SQL Language,0.2566,0,Part II 總覽，只提到 array 三次
+q06,array functions and operators,3,247,https://www.postgresql.org/docs/18/sql-expressions.html,4.2. Value Expressions,0.2236,0,Value Expressions 只有陣列建構式一小節（邊界）
+q06,array functions and operators,4,215,https://www.postgresql.org/docs/18/functions-comparisons.html,9.25. Row and Array Comparisons,0.2007,0,Row and Array Comparisons 主要是 IN/ANY/ALL 比較（邊界）
+q06,array functions and operators,5,5,https://www.postgresql.org/docs/18/datatype-json.html,8.14. JSON Types,0.1456,0,JSON 型別，與陣列函式無關
+q07,create view,1,151,https://www.postgresql.org/docs/18/sql-dropview.html,DROP VIEW,0.7339,0,DROP VIEW 是刪除 view，不是建立
+q07,create view,2,103,https://www.postgresql.org/docs/18/sql-createview.html,CREATE VIEW,0.7211,1,CREATE VIEW 頁面就是需求本身
+q07,create view,3,52,https://www.postgresql.org/docs/18/sql-alterview.html,ALTER VIEW,0.6942,0,ALTER VIEW 是修改 view，不是建立
+q07,create view,4,78,https://www.postgresql.org/docs/18/sql-creatematerializedview.html,CREATE MATERIALIZED VIEW,0.5789,0,建立的是 materialized view，不是一般 view（邊界）
+q07,create view,5,125,https://www.postgresql.org/docs/18/sql-dropmaterializedview.html,DROP MATERIALIZED VIEW,0.4861,0,DROP MATERIALIZED VIEW 與建立無關
+q08,reclaim storage from dead rows,1,178,https://www.postgresql.org/docs/18/sql-select.html,SELECT,0.1109,0,SELECT 頁面與回收空間無關
+q08,reclaim storage from dead rows,2,8,https://www.postgresql.org/docs/18/sql-vacuum.html,VACUUM,0.0854,1,VACUUM 指令正是回收死列
+q08,reclaim storage from dead rows,3,106,https://www.postgresql.org/docs/18/sql-delete.html,DELETE,0.0829,0,DELETE 語法頁面，未談回收空間
+q08,reclaim storage from dead rows,4,246,https://www.postgresql.org/docs/18/queries-table-expressions.html,7.2. Table Expressions,0.0828,0,Table Expressions 與需求無關
+q08,reclaim storage from dead rows,5,219,https://www.postgresql.org/docs/18/routine-vacuuming.html,24.1. Routine Vacuuming,0.0772,1,24.1 的 Recovering Disk Space 專談回收死列空間
+q09,sort rows order by,1,178,https://www.postgresql.org/docs/18/sql-select.html,SELECT,0.2267,1,SELECT 頁面有專門的 ORDER BY Clause 說明，是主要參考頁（邊界：頁面很大）
+q09,sort rows order by,2,7,https://www.postgresql.org/docs/18/tutorial-window.html,3.5. Window Functions,0.1664,0,Window Functions 教學，ORDER BY 只出現在 OVER 內
+q09,sort rows order by,3,190,https://www.postgresql.org/docs/18/sql-values.html,VALUES,0.1461,0,VALUES 只在語法列出 ORDER BY
+q09,sort rows order by,4,245,https://www.postgresql.org/docs/18/functions-window.html,9.22. Window Functions,0.1308,0,Window functions 參考，非排序結果
+q09,sort rows order by,5,247,https://www.postgresql.org/docs/18/sql-expressions.html,4.2. Value Expressions,0.1304,0,Value Expressions 的 ORDER BY 在聚合/視窗語法內
+q10,retry after serialization failure,1,6,https://www.postgresql.org/docs/18/transaction-iso.html,13.2. Transaction Isolation,0.1166,1,13.2 有 serialization failure 與重試的說明
+q10,retry after serialization failure,2,241,https://www.postgresql.org/docs/18/mvcc.html,Chapter 13. Concurrency Control,0.0531,0,Concurrency Control 目錄，只列章名
+q10,retry after serialization failure,3,189,https://www.postgresql.org/docs/18/sql-update.html,UPDATE,0.0424,0,UPDATE 只順帶提到 serialization failure
+q10,retry after serialization failure,4,250,https://www.postgresql.org/docs/18/tutorial-transactions.html,3.4. Transactions,0.0299,0,交易入門，沒談 serialization failure
+q10,retry after serialization failure,5,95,https://www.postgresql.org/docs/18/sql-createtrigger.html,CREATE TRIGGER,0.0285,0,CREATE TRIGGER 與需求無關

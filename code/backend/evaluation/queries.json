@@ -1,0 +1,17 @@
+{
+  "status": "frozen",
+  "note": "Queries were written from page topics, not tuned on search results. Set status to 'frozen' after team review; do not edit afterwards.",
+  "relevance_rule": "A result is relevant (1) if the page is mainly about the information need; pages that only mention the terms in passing are 0. Version of the docs is ignored.",
+  "queries": [
+    {"id": "q01", "query": "window functions", "need": "How window functions work and which ones exist"},
+    {"id": "q02", "query": "recursive common table expressions", "need": "WITH / WITH RECURSIVE queries"},
+    {"id": "q03", "query": "transaction isolation levels", "need": "Isolation levels and the anomalies they prevent"},
+    {"id": "q04", "query": "explicit table locks", "need": "Lock modes and the LOCK command"},
+    {"id": "q05", "query": "how to get inserted rows back", "need": "RETURNING clause on INSERT/UPDATE/DELETE (natural language, vocabulary mismatch)"},
+    {"id": "q06", "query": "array functions and operators", "need": "Array operators/functions and the array type"},
+    {"id": "q07", "query": "create view", "need": "Defining views with CREATE VIEW"},
+    {"id": "q08", "query": "reclaim storage from dead rows", "need": "VACUUM (natural language, vocabulary mismatch)"},
+    {"id": "q09", "query": "sort rows order by", "need": "Sorting query results with ORDER BY"},
+    {"id": "q10", "query": "retry after serialization failure", "need": "Handling serialization failures in transactions"}
+  ]
+}
