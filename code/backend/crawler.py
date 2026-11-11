@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import requests
 from urllib.robotparser import RobotFileParser
 import time
-from database import init_database, save_document
+from database import DB_PATH, init_database, save_document
 import logging
 from pathlib import Path
 from email.utils import parsedate_to_datetime
@@ -643,7 +643,7 @@ SEED_URLS = tuple(
         "tutorial-window.html", "sql-vacuum.html",
     )
 )
-DEFAULT_SNAPSHOT_DB = Path(__file__).resolve().parent / "data" / "documents-pg18.db"
+DEFAULT_SNAPSHOT_DB = DB_PATH
 
 
 def run_crawler(seed_urls, max_documents=250, *, db_path=DEFAULT_SNAPSHOT_DB):

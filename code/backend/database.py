@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 
 # 資料庫位置
-DB_PATH = Path(__file__).resolve().parent / "data" / "documents.db"
+DB_PATH = Path(__file__).resolve().parent / "data" / "documents-pg18.db"
 
 
 def init_database(db_path=DB_PATH):

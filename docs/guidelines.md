@@ -98,7 +98,7 @@ python -m flask --app indexed_app:create_indexed_app run --debug
 python -m flask --app sqlite_preview:create_preview_app run --debug
 ```
 
-預覽以唯讀方式載入舊版 `code/backend/data/documents.db`，在啟動時建立記憶體索引。新版 demo 使用離線索引，從 `code/backend` 設定 `SEARCH_INDEX_PATH` 為 `data/index-pg18.json` 後啟動 `indexed_app:create_indexed_app`。單獨使用 `--app app` 時，搜尋端點會回傳 `503`。
+預覽以唯讀方式載入 `code/backend/data/documents-pg18.db`，在啟動時建立記憶體索引。Demo 入口 `indexed_app:create_indexed_app` 預設載入 `data/index-pg18.json`，可透過 `SEARCH_INDEX_PATH` 指定其他索引。單獨使用 `--app app` 時，搜尋端點會回傳 `503`。
 
 ## 程式風格與命名
 

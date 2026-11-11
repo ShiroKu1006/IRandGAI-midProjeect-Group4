@@ -1,11 +1,10 @@
 import sqlite3
-from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent / "data" / "documents.db"
+from database import DB_PATH
 
 
 def check_database():
-    with sqlite3.connect(DB_PATH) as conn:
+    with sqlite3.connect(f"{DB_PATH.as_uri()}?mode=ro", uri=True) as conn:
         conn.row_factory = sqlite3.Row
 
         # 1. 文件基本統計

@@ -143,14 +143,17 @@ if ($LASTEXITCODE -eq 0) {
 
 爬蟲保留正規化 URL 唯一約束，並略過空白正規化後完全相同的正文。爬取摘要在同名的 `.crawl.log` 檔案末尾。有效頁不足 200 筆或缺少任一種子時，爬蟲以錯誤狀態結束，應先檢查紀錄再換新檔名重爬。
 
-新版交付快照為 `data/documents-pg18.db`、`data/index-pg18.json` 和 `data/documents-pg18.crawl.log`。在後端終端機選擇新版索引：
+新版交付快照為 `data/documents-pg18.db`、`data/index-pg18.json` 和 `data/documents-pg18.crawl.log`。搜尋 API 與評估預設使用新版索引，SQLite 預覽、資料庫檢查與建索引預設讀取新版資料庫。從 `code/backend` 啟動：
 
 ```powershell
-$env:SEARCH_INDEX_PATH = 'data/index-pg18.json'
 python -m flask --app indexed_app:create_indexed_app run --port 5000
 ```
 
+<<<<<<< HEAD
+簡報要比較舊版時，先停止 Flask，再設定 `$env:SEARCH_INDEX_PATH = 'data/index.json'` 並重新啟動。要恢復新版預設，清除該環境變數後重新啟動。舊版 SQLite 位於 `data/documents.db`。比較時可用 `CREATE TABLE`、`jsonb`、`window functions` 看收錄與排名差異。
+=======
 舊版索引（`data/index.json`）已移除，預設索引改為 `data/index-pg18.json`，不需再設定 `SEARCH_INDEX_PATH`。舊版 SQLite 仍保留在 `data/documents.db`；下方「快照比較」表保留當時的名次紀錄。
+>>>>>>> ddb3a5f378e340e7790e764e2a13c960d574807b
 
 ### 快照比較
 
@@ -166,6 +169,10 @@ python -m flask --app indexed_app:create_indexed_app run --port 5000
 | `VACUUM` | VACUUM | 1 | 1 |
 
 舊版的 `window functions` 前十筆都是同一篇的不同版本，新版前十筆各自對應不同頁面。`CREATE TABLE` 新版第一筆是 `CREATE TABLE AS`，反映餘弦排序仍會把共用詞彙較多的文件排在前面。這張表記錄指定專頁名次，供 demo 比較。
+
+## 搜尋品質評估
+
+固定查詢、人工相關性判定、TF-IDF 基準結果與 BM25 比較的重現步驟，見 [評估 README](code/backend/evaluation/README.md)。
 
 ## 前端檢查
 
