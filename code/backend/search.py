@@ -1,5 +1,10 @@
 from collections import Counter, defaultdict
-from math import hypot
+from functools import cached_property
+from math import hypot, log1p
+
+
+BM25_K1 = 1.2
+BM25_B = 0.75
 
 
 class SearchIndex:
@@ -35,8 +40,44 @@ class SearchIndex:
             if dot_product > 0 and document_norm > 0:
                 score = dot_product / (query_norm * document_norm)
                 ranked.append((doc_id, score))
-        ranked.sort(key=lambda hit: (-hit[1], hit[0]))
+        return indexed_count, self._top_hits(ranked, top_k)
 
+    @cached_property
+    def _bm25_statistics(self):
+        lengths = dict.fromkeys(self.documents, 0)
+        for posting in self.postings.values():
+            for doc_id, frequency in posting.items():
+                lengths[doc_id] += frequency
+        count = len(lengths)
+        avg_length = sum(lengths.values()) / count if count else 0
+        idf = {
+            term: log1p((count - len(posting) + 0.5) / (len(posting) + 0.5))
+            for term, posting in self.postings.items()
+        }
+        return lengths, avg_length, idf
+
+    def search_bm25(self, query, top_k=10):
+        indexed_count = len(self.documents)
+        terms = dict.fromkeys(self.tokenize(query))
+        if not terms or top_k <= 0 or not indexed_count:
+            return indexed_count, []
+
+        lengths, avg_length, idf = self._bm25_statistics
+        if not avg_length:
+            return indexed_count, []
+
+        scores = defaultdict(float)
+        for term in terms:
+            for doc_id, frequency in self.postings.get(term, {}).items():
+                normalization = BM25_K1 * (1 - BM25_B + BM25_B * lengths[doc_id] / avg_length)
+                scores[doc_id] += idf[term] * frequency * (BM25_K1 + 1) / (
+                    frequency + normalization
+                )
+        ranked = [(doc_id, score) for doc_id, score in scores.items() if score > 0]
+        return indexed_count, self._top_hits(ranked, top_k)
+
+    def _top_hits(self, ranked, top_k):
+        ranked.sort(key=lambda hit: (-hit[1], hit[0]))
         hits = []
         for doc_id, score in ranked[:min(top_k, 10)]:
             document = self.documents[doc_id]
@@ -47,4 +88,4 @@ class SearchIndex:
                 "snippet": " ".join(document["text"].split()[:75]),
                 "score": score,
             })
-        return indexed_count, hits
+        return hits

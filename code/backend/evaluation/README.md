@@ -47,7 +47,7 @@
 - 第 1 名正確（7.8 WITH Queries，0.2019），但第 2 到 5 名是 DROP TABLE、CREATE TABLE AS、11.7 Indexes on Expressions、SELECT INTO，分數都在 0.18 到 0.19，和第 1 名差距很小。
 - 查詢詞 table 出現在 133 頁（idf 1.63），expressions 出現在 37 頁。許多不相關的語法頁因為 table 出現次數很高，或有 expression 字樣，累積出接近的分數。
 - 觀察：前 5 名裡的錯誤多半是命中通用詞（table、expressions），而不是命中專有詞 recursive（只有 15 頁）。
-- 可能原因：tf 使用原始詞頻，沒有長度正規化以外的飽和處理，通用詞在長頁面（如 DROP TABLE）反覆出現就會堆高分數。若要驗證，可以改用 BM25 或對 tf 取對數後再比較 P@5（尚未做）。
+- 可能原因：原始詞頻缺少飽和處理，通用詞反覆出現會增加該詞對分數的貢獻。BM25 改變了這題的前五名組成，P@5 仍為 0.20。 [BM25 比較報告](bm25/report.md)
 
 ### 其他低分題的共同現象
 
@@ -57,7 +57,7 @@
 ## 限制
 
 - 只有 10 題、每題只看前 5 名，每題 P@5 的最小單位是 0.20，平均值的雜訊不小，適合用來比較改版前後，不適合當成絕對品質的結論。
-- 標註由單人完成，沒有做標註者間一致性檢查。
+- TF-IDF 基準標註由單人完成，沒有做標註者間一致性檢查。
 - 沒有計算召回率（Recall），因為沒有標出每題「所有」相關頁面。
 
 ## 重現步驟
@@ -87,3 +87,21 @@ python -m evaluation.compute_metrics
 | `metrics.py` | P@5 與去重頁數的計算函式 |
 | `run_queries.py` | 跑查詢並產生待標註檔案 |
 | `compute_metrics.py` | 由標註計算指標 |
+
+## BM25 加分比較
+
+在 `IRandGAI` 環境下，從 `code/backend` 執行：
+
+```powershell
+python -m evaluation.compare_bm25 prepare
+```
+
+命令使用 `data/index-pg18.json` 與固定的 `queries.json`，依 `run_info.json` 驗證快照並核對 TF-IDF 前五名。兩個排序共用 `judgments.csv` 中相同查詢及文件的判定。BM25 新出現的文件列在 [補充判定清單](bm25/new_judgments.csv)，重跑 `prepare` 會保留現有清單。
+
+請依文件全文逐筆複核 `relevant` 和 `reason`，必要時更正後，把該筆 `status` 從 `draft` 或 `pending` 改成 `confirmed`。全部複核後執行：
+
+```powershell
+python -m evaluation.compare_bm25 compare
+```
+
+有缺漏時，命令會列出待確認的查詢與文件 ID。成功後會在 `evaluation/bm25/` 產出 [rankings.csv](bm25/rankings.csv)（兩種排序的前五名、分數與判定）及 [comparison.csv](bm25/comparison.csv)（逐題及平均 P@5 與差值）。本次補充判定已確認，可直接執行 `compare` 重現 [BM25 比較報告](bm25/report.md) 的結果。

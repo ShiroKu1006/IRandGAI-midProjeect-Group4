@@ -1,0 +1,101 @@
+method,query_id,query,rank,doc_id,url,title,score,relevant,reason
+tfidf,q01,window functions,1,7,https://www.postgresql.org/docs/18/tutorial-window.html,3.5. Window Functions,0.44374455388046924,1,頁面專門介紹 window functions 與 OVER/PARTITION BY
+tfidf,q01,window functions,2,245,https://www.postgresql.org/docs/18/functions-window.html,9.22. Window Functions,0.38306852952383075,1,9.22 列出內建 window functions
+tfidf,q01,window functions,3,247,https://www.postgresql.org/docs/18/sql-expressions.html,4.2. Value Expressions,0.20323419719102773,0,Value Expressions 只有 Window Function Calls 一小節，主題是表達式
+tfidf,q01,window functions,4,212,https://www.postgresql.org/docs/18/sql.html,Part II. The SQL Language,0.1473406206339022,0,Part II 的章節總覽，只提到一次
+tfidf,q01,window functions,5,248,https://www.postgresql.org/docs/18/tutorial-advanced.html,Chapter 3. Advanced Features,0.1459122704266322,0,Chapter 3 目錄，只列出章名
+bm25,q01,window functions,1,7,https://www.postgresql.org/docs/18/tutorial-window.html,3.5. Window Functions,7.752544972828071,1,頁面專門介紹 window functions 與 OVER/PARTITION BY
+bm25,q01,window functions,2,245,https://www.postgresql.org/docs/18/functions-window.html,9.22. Window Functions,7.660940905314497,1,9.22 列出內建 window functions
+bm25,q01,window functions,3,247,https://www.postgresql.org/docs/18/sql-expressions.html,4.2. Value Expressions,7.086836293485323,0,Value Expressions 只有 Window Function Calls 一小節，主題是表達式
+bm25,q01,window functions,4,178,https://www.postgresql.org/docs/18/sql-select.html,SELECT,6.385392940894038,0,SELECT 語法參考包含 WINDOW 子句與 frame 說明，全文涵蓋多種 SELECT 子句，主題為資料查詢。
+bm25,q01,window functions,5,64,https://www.postgresql.org/docs/18/sql-createaggregate.html,CREATE AGGREGATE,6.2193404824688105,0,重點是如何定義自訂聚合函式，僅在聚合狀態與 moving-aggregate 支援的說明中提及 window function。
+tfidf,q02,recursive common table expressions,1,209,https://www.postgresql.org/docs/18/queries-with.html,7.8. WITH Queries (Common Table Expressions),0.2019302816338599,1,7.8 專門講 WITH 與 WITH RECURSIVE
+tfidf,q02,recursive common table expressions,2,140,https://www.postgresql.org/docs/18/sql-droptable.html,DROP TABLE,0.18879913049281372,0,DROP TABLE 與 CTE 無關
+tfidf,q02,recursive common table expressions,3,92,https://www.postgresql.org/docs/18/sql-createtableas.html,CREATE TABLE AS,0.1809845833141754,0,CREATE TABLE AS 與 CTE 無關
+tfidf,q02,recursive common table expressions,4,236,https://www.postgresql.org/docs/18/indexes-expressional.html,11.7. Indexes on Expressions,0.18097342485966078,0,索引表達式，與 CTE 無關
+tfidf,q02,recursive common table expressions,5,179,https://www.postgresql.org/docs/18/sql-selectinto.html,SELECT INTO,0.1800021400674613,0,SELECT INTO 只在語法列出 WITH [RECURSIVE]，不是主題
+bm25,q02,recursive common table expressions,1,209,https://www.postgresql.org/docs/18/queries-with.html,7.8. WITH Queries (Common Table Expressions),12.406365740962205,1,7.8 專門講 WITH 與 WITH RECURSIVE
+bm25,q02,recursive common table expressions,2,178,https://www.postgresql.org/docs/18/sql-select.html,SELECT,9.820267193095335,0,有 WITH RECURSIVE 的員工階層範例，但全文是 SELECT 各子句的語法參考。
+bm25,q02,recursive common table expressions,3,236,https://www.postgresql.org/docs/18/indexes-expressional.html,11.7. Indexes on Expressions,8.09696707173365,0,索引表達式，與 CTE 無關
+bm25,q02,recursive common table expressions,4,69,https://www.postgresql.org/docs/18/sql-createdomain.html,CREATE DOMAIN,7.358216859505626,0,說明資料型別 domain 的建立、預設值與 CHECK 約束，未介紹 WITH 查詢或遞迴 CTE。
+bm25,q02,recursive common table expressions,5,90,https://www.postgresql.org/docs/18/sql-createstatistics.html,CREATE STATISTICS,7.123288210689148,0,說明建立延伸統計以改善查詢規劃器估算，並以資料表欄位和表達式為例，未介紹遞迴 CTE。
+tfidf,q03,transaction isolation levels,1,6,https://www.postgresql.org/docs/18/transaction-iso.html,13.2. Transaction Isolation,0.3706803015550662,1,13.2 專門講隔離等級與其現象
+tfidf,q03,transaction isolation levels,2,183,https://www.postgresql.org/docs/18/sql-set-transaction.html,SET TRANSACTION,0.34653524278722664,1,SET TRANSACTION 說明如何設定交易隔離等級（邊界：偏指令用法）
+tfidf,q03,transaction isolation levels,3,186,https://www.postgresql.org/docs/18/sql-start-transaction.html,START TRANSACTION,0.27588060162297157,0,START TRANSACTION 只在語法列出 ISOLATION LEVEL
+tfidf,q03,transaction isolation levels,4,54,https://www.postgresql.org/docs/18/sql-begin.html,BEGIN,0.25297440285648354,0,BEGIN 只在語法列出 ISOLATION LEVEL
+tfidf,q03,transaction isolation levels,5,240,https://www.postgresql.org/docs/18/mvcc-intro.html,13.1. Introduction,0.22093486825633699,0,MVCC 簡介，幾乎沒談隔離等級
+bm25,q03,transaction isolation levels,1,6,https://www.postgresql.org/docs/18/transaction-iso.html,13.2. Transaction Isolation,13.906108614793844,1,13.2 專門講隔離等級與其現象
+bm25,q03,transaction isolation levels,2,161,https://www.postgresql.org/docs/18/sql-lock.html,LOCK,9.647979216871793,0,用 Read Committed 等隔離層級說明取得表鎖的時機，全文重點是 LOCK TABLE 語法與鎖定模式。
+bm25,q03,transaction isolation levels,3,220,https://www.postgresql.org/docs/18/runtime-config-client.html,19.11. Client Connection Defaults,8.60937583008818,0,default_transaction_isolation 列出可設的隔離層級，全文介紹多種連線設定，未解釋各層級防止的異常。
+bm25,q03,transaction isolation levels,4,183,https://www.postgresql.org/docs/18/sql-set-transaction.html,SET TRANSACTION,8.587181897276198,1,SET TRANSACTION 說明如何設定交易隔離等級（邊界：偏指令用法）
+bm25,q03,transaction isolation levels,5,240,https://www.postgresql.org/docs/18/mvcc-intro.html,13.1. Introduction,8.216116132312983,0,MVCC 簡介，幾乎沒談隔離等級
+tfidf,q04,explicit table locks,1,238,https://www.postgresql.org/docs/18/explicit-locking.html,13.3. Explicit Locking,0.29910507669930536,1,13.3 專門講表層級與列層級鎖模式
+tfidf,q04,explicit table locks,2,92,https://www.postgresql.org/docs/18/sql-createtableas.html,CREATE TABLE AS,0.23250079739705448,0,與鎖無關
+tfidf,q04,explicit table locks,3,140,https://www.postgresql.org/docs/18/sql-droptable.html,DROP TABLE,0.23047065307964779,0,與鎖無關
+tfidf,q04,explicit table locks,4,241,https://www.postgresql.org/docs/18/mvcc.html,Chapter 13. Concurrency Control,0.2258848220705709,0,Concurrency Control 章節目錄，只列章名
+tfidf,q04,explicit table locks,5,244,https://www.postgresql.org/docs/18/view-pg-locks.html,53.13. pg_locks,0.2254075051738785,0,pg_locks 是查詢鎖狀態的系統視圖，不是在講鎖模式（邊界）
+bm25,q04,explicit table locks,1,238,https://www.postgresql.org/docs/18/explicit-locking.html,13.3. Explicit Locking,9.799355869392357,1,13.3 專門講表層級與列層級鎖模式
+bm25,q04,explicit table locks,2,241,https://www.postgresql.org/docs/18/mvcc.html,Chapter 13. Concurrency Control,9.709192742883749,0,Concurrency Control 章節目錄，只列章名
+bm25,q04,explicit table locks,3,6,https://www.postgresql.org/docs/18/transaction-iso.html,13.2. Transaction Isolation,7.859558889295701,0,介紹隔離層級與並行異常，提到的是隔離機制中的 predicate lock，沒有說明 LOCK TABLE 的使用與鎖定模式。
+bm25,q04,explicit table locks,4,244,https://www.postgresql.org/docs/18/view-pg-locks.html,53.13. pg_locks,6.48996814719629,0,pg_locks 是查詢鎖狀態的系統視圖，不是在講鎖模式（邊界）
+bm25,q04,explicit table locks,5,161,https://www.postgresql.org/docs/18/sql-lock.html,LOCK,6.476980825993245,1,專門說明 LOCK TABLE 的語法、各表鎖模式與 NOWAIT，並交代鎖在交易結束時釋放。
+tfidf,q05,how to get inserted rows back,1,178,https://www.postgresql.org/docs/18/sql-select.html,SELECT,0.11156106268358087,0,SELECT 頁面，RETURNING 只是順帶出現
+tfidf,q05,how to get inserted rows back,2,232,https://www.postgresql.org/docs/18/dml.html,Chapter 6. Data Manipulation,0.10813745653667477,0,Data Manipulation 目錄，只列出 6.4 的章名
+tfidf,q05,how to get inserted rows back,3,173,https://www.postgresql.org/docs/18/sql-rollback-prepared.html,ROLLBACK PREPARED,0.10070080659447149,0,ROLLBACK PREPARED 與需求無關
+tfidf,q05,how to get inserted rows back,4,174,https://www.postgresql.org/docs/18/sql-rollback-to.html,ROLLBACK TO SAVEPOINT,0.09660590309140267,0,ROLLBACK TO SAVEPOINT 與需求無關
+tfidf,q05,how to get inserted rows back,5,7,https://www.postgresql.org/docs/18/tutorial-window.html,3.5. Window Functions,0.08940479433208486,0,Window Functions 與需求無關
+bm25,q05,how to get inserted rows back,1,219,https://www.postgresql.org/docs/18/routine-vacuuming.html,24.1. Routine Vacuuming,9.929321800345386,0,說明定期 VACUUM 的空間回收與資料庫維護，沒有說明如何取回 INSERT 等指令修改的資料列。
+bm25,q05,how to get inserted rows back,2,82,https://www.postgresql.org/docs/18/sql-createpolicy.html,CREATE POLICY,9.135477549875151,0,在資料列層級安全政策中說明 RETURNING 需要 SELECT 權限，重點是政策如何套用，沒有教如何用 RETURNING 取回資料列。
+bm25,q05,how to get inserted rows back,3,170,https://www.postgresql.org/docs/18/sql-release-savepoint.html,RELEASE SAVEPOINT,8.9124741860491,0,說明釋放 savepoint 與其後的 savepoints，以及交易變更如何保留，沒有說明 RETURNING。
+bm25,q05,how to get inserted rows back,4,7,https://www.postgresql.org/docs/18/tutorial-window.html,3.5. Window Functions,7.17053443053841,0,Window Functions 與需求無關
+bm25,q05,how to get inserted rows back,5,95,https://www.postgresql.org/docs/18/sql-createtrigger.html,CREATE TRIGGER,6.847572424024768,0,說明觸發器如何用 NEW TABLE 等 transition relations 讀取修改的資料列，與 SQL 指令用 RETURNING 回傳資料列的需求不同。
+tfidf,q06,array functions and operators,1,191,https://www.postgresql.org/docs/18/arrays.html,8.15. Arrays,0.4464432883125821,1,8.15 專門講陣列型別與操作
+tfidf,q06,array functions and operators,2,212,https://www.postgresql.org/docs/18/sql.html,Part II. The SQL Language,0.2565678640491919,0,Part II 總覽，只提到 array 三次
+tfidf,q06,array functions and operators,3,247,https://www.postgresql.org/docs/18/sql-expressions.html,4.2. Value Expressions,0.22362022718670568,0,Value Expressions 只有陣列建構式一小節（邊界）
+tfidf,q06,array functions and operators,4,215,https://www.postgresql.org/docs/18/functions-comparisons.html,9.25. Row and Array Comparisons,0.20074200663104014,0,Row and Array Comparisons 主要是 IN/ANY/ALL 比較（邊界）
+tfidf,q06,array functions and operators,5,5,https://www.postgresql.org/docs/18/datatype-json.html,8.14. JSON Types,0.14556446594141234,0,JSON 型別，與陣列函式無關
+bm25,q06,array functions and operators,1,235,https://www.postgresql.org/docs/18/functions-json.html,9.16. JSON Functions and Operators,8.528841745174615,0,函式與運算子處理 JSON 或 JSONB 值，包含 JSON 陣列取值，沒有介紹 PostgreSQL 原生陣列型別的函式及運算子。
+bm25,q06,array functions and operators,2,5,https://www.postgresql.org/docs/18/datatype-json.html,8.14. JSON Types,8.485520257988192,0,JSON 型別，與陣列函式無關
+bm25,q06,array functions and operators,3,212,https://www.postgresql.org/docs/18/sql.html,Part II. The SQL Language,8.351971399476145,0,Part II 總覽，只提到 array 三次
+bm25,q06,array functions and operators,4,247,https://www.postgresql.org/docs/18/sql-expressions.html,4.2. Value Expressions,8.18151775499456,0,Value Expressions 只有陣列建構式一小節（邊界）
+bm25,q06,array functions and operators,5,79,https://www.postgresql.org/docs/18/sql-createopclass.html,CREATE OPERATOR CLASS,7.945988400566424,0,說明如何替索引方法定義 operator class；int4 陣列是 GiST 範例的輸入型別。
+tfidf,q07,create view,1,151,https://www.postgresql.org/docs/18/sql-dropview.html,DROP VIEW,0.733949999444771,0,DROP VIEW 是刪除 view，不是建立
+tfidf,q07,create view,2,103,https://www.postgresql.org/docs/18/sql-createview.html,CREATE VIEW,0.7210996158707862,1,CREATE VIEW 頁面就是需求本身
+tfidf,q07,create view,3,52,https://www.postgresql.org/docs/18/sql-alterview.html,ALTER VIEW,0.6941975768256737,0,ALTER VIEW 是修改 view，不是建立
+tfidf,q07,create view,4,78,https://www.postgresql.org/docs/18/sql-creatematerializedview.html,CREATE MATERIALIZED VIEW,0.5789185027791874,0,建立的是 materialized view，不是一般 view（邊界）
+tfidf,q07,create view,5,125,https://www.postgresql.org/docs/18/sql-dropmaterializedview.html,DROP MATERIALIZED VIEW,0.4861424986162977,0,DROP MATERIALIZED VIEW 與建立無關
+bm25,q07,create view,1,103,https://www.postgresql.org/docs/18/sql-createview.html,CREATE VIEW,3.6542549337000274,1,CREATE VIEW 頁面就是需求本身
+bm25,q07,create view,2,78,https://www.postgresql.org/docs/18/sql-creatematerializedview.html,CREATE MATERIALIZED VIEW,3.6506781960465964,0,建立的是 materialized view，不是一般 view（邊界）
+bm25,q07,create view,3,52,https://www.postgresql.org/docs/18/sql-alterview.html,ALTER VIEW,3.6127329235868526,0,ALTER VIEW 是修改 view，不是建立
+bm25,q07,create view,4,26,https://www.postgresql.org/docs/18/sql-altermaterializedview.html,ALTER MATERIALIZED VIEW,3.5505332142791977,0,說明修改既有 materialized view 的屬性、名稱等，沒有說明用 CREATE VIEW 定義一般 view。
+bm25,q07,create view,5,86,https://www.postgresql.org/docs/18/sql-createrule.html,CREATE RULE,3.5133128384909877,0,主題是建立查詢重寫規則，僅在說明可更新 view 時參照 CREATE VIEW。
+tfidf,q08,reclaim storage from dead rows,1,178,https://www.postgresql.org/docs/18/sql-select.html,SELECT,0.1109112211191573,0,SELECT 頁面與回收空間無關
+tfidf,q08,reclaim storage from dead rows,2,8,https://www.postgresql.org/docs/18/sql-vacuum.html,VACUUM,0.08535119934634507,1,VACUUM 指令正是回收死列
+tfidf,q08,reclaim storage from dead rows,3,106,https://www.postgresql.org/docs/18/sql-delete.html,DELETE,0.08286968144378051,0,DELETE 語法頁面，未談回收空間
+tfidf,q08,reclaim storage from dead rows,4,246,https://www.postgresql.org/docs/18/queries-table-expressions.html,7.2. Table Expressions,0.08284894863568762,0,Table Expressions 與需求無關
+tfidf,q08,reclaim storage from dead rows,5,219,https://www.postgresql.org/docs/18/routine-vacuuming.html,24.1. Routine Vacuuming,0.07724136547536295,1,24.1 的 Recovering Disk Space 專談回收死列空間
+bm25,q08,reclaim storage from dead rows,1,219,https://www.postgresql.org/docs/18/routine-vacuuming.html,24.1. Routine Vacuuming,14.14611935672026,1,24.1 的 Recovering Disk Space 專談回收死列空間
+bm25,q08,reclaim storage from dead rows,2,8,https://www.postgresql.org/docs/18/sql-vacuum.html,VACUUM,12.976763964952578,1,VACUUM 指令正是回收死列
+bm25,q08,reclaim storage from dead rows,3,216,https://www.postgresql.org/docs/18/indexam.html,Chapter 63. Index Access Method Interface Definition,9.05582738872053,0,介紹索引存取方法的介面，僅在說明索引項目生命週期時提到 VACUUM 會回收死 tuple 與索引項目。
+bm25,q08,reclaim storage from dead rows,4,223,https://www.postgresql.org/docs/18/runtime-config-vacuum.html,19.10. Vacuuming,8.97755984160086,1,專門說明 VACUUM 與 autovacuum 的設定，包含更新或刪除多少 tuple 會觸發 VACUUM 的門檻與比例。
+bm25,q08,reclaim storage from dead rows,5,165,https://www.postgresql.org/docs/18/sql-prepare-transaction.html,PREPARE TRANSACTION,8.13788152589538,0,主題是兩階段提交，僅提醒長期未結束的 prepared transaction 會妨礙 VACUUM 回收空間。
+tfidf,q09,sort rows order by,1,178,https://www.postgresql.org/docs/18/sql-select.html,SELECT,0.2266926574885101,1,SELECT 頁面有專門的 ORDER BY Clause 說明，是主要參考頁（邊界：頁面很大）
+tfidf,q09,sort rows order by,2,7,https://www.postgresql.org/docs/18/tutorial-window.html,3.5. Window Functions,0.1664148426083974,0,Window Functions 教學，ORDER BY 只出現在 OVER 內
+tfidf,q09,sort rows order by,3,190,https://www.postgresql.org/docs/18/sql-values.html,VALUES,0.14608930599925826,0,VALUES 只在語法列出 ORDER BY
+tfidf,q09,sort rows order by,4,245,https://www.postgresql.org/docs/18/functions-window.html,9.22. Window Functions,0.13084539190627523,0,Window functions 參考，非排序結果
+tfidf,q09,sort rows order by,5,247,https://www.postgresql.org/docs/18/sql-expressions.html,4.2. Value Expressions,0.13038518572024016,0,Value Expressions 的 ORDER BY 在聚合/視窗語法內
+bm25,q09,sort rows order by,1,58,https://www.postgresql.org/docs/18/sql-cluster.html,CLUSTER,7.459465991010242,0,CLUSTER 根據索引重排資料表的實體儲存順序，沒有教如何用 ORDER BY 指定查詢輸出的列順序。
+bm25,q09,sort rows order by,2,209,https://www.postgresql.org/docs/18/queries-with.html,7.8. WITH Queries (Common Table Expressions),7.006392714272905,0,使用 ORDER BY path 或 depth 排列遞迴查詢的走訪結果，全文重點是 WITH 和遞迴 CTE。
+bm25,q09,sort rows order by,3,245,https://www.postgresql.org/docs/18/functions-window.html,9.22. Window Functions,6.878868468209237,0,Window functions 參考，非排序結果
+bm25,q09,sort rows order by,4,228,https://www.postgresql.org/docs/18/xindex.html,36.16. Interfacing Extensions to Indexes,6.875535833791979,0,從索引擴充的角度解釋 operator class 與 ordering operator，ORDER BY 用於展示索引支援的排序行為。
+bm25,q09,sort rows order by,5,190,https://www.postgresql.org/docs/18/sql-values.html,VALUES,6.7502343649718455,0,VALUES 只在語法列出 ORDER BY
+tfidf,q10,retry after serialization failure,1,6,https://www.postgresql.org/docs/18/transaction-iso.html,13.2. Transaction Isolation,0.116598684027561,1,13.2 有 serialization failure 與重試的說明
+tfidf,q10,retry after serialization failure,2,241,https://www.postgresql.org/docs/18/mvcc.html,Chapter 13. Concurrency Control,0.05305742908341827,0,Concurrency Control 目錄，只列章名
+tfidf,q10,retry after serialization failure,3,189,https://www.postgresql.org/docs/18/sql-update.html,UPDATE,0.042408821847632415,0,UPDATE 只順帶提到 serialization failure
+tfidf,q10,retry after serialization failure,4,250,https://www.postgresql.org/docs/18/tutorial-transactions.html,3.4. Transactions,0.029881021552805163,0,交易入門，沒談 serialization failure
+tfidf,q10,retry after serialization failure,5,95,https://www.postgresql.org/docs/18/sql-createtrigger.html,CREATE TRIGGER,0.028479714366642754,0,CREATE TRIGGER 與需求無關
+bm25,q10,retry after serialization failure,1,6,https://www.postgresql.org/docs/18/transaction-iso.html,13.2. Transaction Isolation,15.28752018266032,1,13.2 有 serialization failure 與重試的說明
+bm25,q10,retry after serialization failure,2,189,https://www.postgresql.org/docs/18/sql-update.html,UPDATE,10.973461304403898,0,UPDATE 只順帶提到 serialization failure
+bm25,q10,retry after serialization failure,3,241,https://www.postgresql.org/docs/18/mvcc.html,Chapter 13. Concurrency Control,9.24633995397528,0,Concurrency Control 目錄，只列章名
+bm25,q10,retry after serialization failure,4,183,https://www.postgresql.org/docs/18/sql-set-transaction.html,SET TRANSACTION,8.099904990403976,0,介紹 SET TRANSACTION 的交易特性設定，僅提到 DEFERRABLE 避開 serialization failure，沒有說明遇到失敗後如何重試。
+bm25,q10,retry after serialization failure,5,212,https://www.postgresql.org/docs/18/sql.html,Part II. The SQL Language,6.364967104266733,0,SQL 語言篇的章節總覽，僅在目錄列出 Serialization Failure Handling，沒有說明重試交易的方式。

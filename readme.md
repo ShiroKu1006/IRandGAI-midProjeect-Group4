@@ -170,6 +170,10 @@ python -m flask --app indexed_app:create_indexed_app run --port 5000
 
 舊版的 `window functions` 前十筆都是同一篇的不同版本，新版前十筆各自對應不同頁面。`CREATE TABLE` 新版第一筆是 `CREATE TABLE AS`，反映餘弦排序仍會把共用詞彙較多的文件排在前面。這張表記錄指定專頁名次，供 demo 比較。
 
+## 搜尋品質評估
+
+固定查詢、人工相關性判定、TF-IDF 基準結果與 BM25 比較的重現步驟，見 [評估 README](code/backend/evaluation/README.md)。
+
 ## 前端檢查
 
 在 `code/frontend` 目錄執行：

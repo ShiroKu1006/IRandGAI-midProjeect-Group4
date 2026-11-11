@@ -1,0 +1,12 @@
+query_id,query,tfidf_p_at_5,bm25_p_at_5,delta_p_at_5
+q01,window functions,0.40,0.40,0.00
+q02,recursive common table expressions,0.20,0.20,0.00
+q03,transaction isolation levels,0.40,0.40,0.00
+q04,explicit table locks,0.20,0.40,0.20
+q05,how to get inserted rows back,0.00,0.00,0.00
+q06,array functions and operators,0.20,0.00,-0.20
+q07,create view,0.20,0.20,0.00
+q08,reclaim storage from dead rows,0.40,0.60,0.20
+q09,sort rows order by,0.20,0.00,-0.20
+q10,retry after serialization failure,0.20,0.20,0.00
+mean,,0.240,0.240,0.000
