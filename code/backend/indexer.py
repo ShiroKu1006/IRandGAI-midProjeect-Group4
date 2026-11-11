@@ -12,7 +12,8 @@ from preprocess import tokenize
 from search import SearchIndex
 
 BASE_DIR = Path(__file__).resolve().parent
-DEFAULT_INDEX_PATH = BASE_DIR / "data" / "index-pg18.json"
+DEFAULT_DB_PATH = BASE_DIR / "data" / "documents.db"
+DEFAULT_INDEX_PATH = BASE_DIR / "data" / "index.json"
 
 INDEX_FORMAT_VERSION = 1
 TF_SCHEME = "tf = raw term count"
