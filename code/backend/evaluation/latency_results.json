@@ -1,0 +1,152 @@
+{
+  "scope": "SearchIndex.search(query, top_k=10): raw query string in, top-10 hits (title/url/snippet) out. Excludes index loading, database, Flask/HTTP, frontend.",
+  "method": {
+    "warmup_runs_per_query": 3,
+    "timed_runs_per_query": 50,
+    "timer": "time.perf_counter_ns",
+    "gc_paused_while_timing": true,
+    "queries": "evaluation/queries.json (same 10 frozen queries as Precision@5)"
+  },
+  "environment": {
+    "python": "3.10.12",
+    "platform": "Linux-6.8.0-138-generic-aarch64-with-glibc2.35",
+    "machine": "aarch64",
+    "indexed_documents": 250,
+    "indexed_terms": 8087,
+    "index_sha256": "478179de08c74899f3bfb3c575dde0fce34b3d2316034c86063a9ed92a7a0233",
+    "queries_sha256": "1c3a03c6d20693d78cb304c5883212d62baaf03e6b7752d0559a3869963a4120"
+  },
+  "index_load_ms": 21.804792,
+  "overall": {
+    "n": 500,
+    "mean_ms": 0.444576268,
+    "median_ms": 0.49435399999999996,
+    "stdev_ms": 0.1903566737193713,
+    "min_ms": 0.131875,
+    "p95_ms": 0.70701105,
+    "p99_ms": 0.7919375899999997,
+    "max_ms": 0.858667
+  },
+  "per_query": [
+    {
+      "id": "q01",
+      "query": "window functions",
+      "n": 50,
+      "mean_ms": 0.5792624200000001,
+      "median_ms": 0.5715835,
+      "stdev_ms": 0.029246602901345318,
+      "min_ms": 0.545666,
+      "p95_ms": 0.63075015,
+      "p99_ms": 0.66254625,
+      "max_ms": 0.674
+    },
+    {
+      "id": "q02",
+      "query": "recursive common table expressions",
+      "n": 50,
+      "mean_ms": 0.50521752,
+      "median_ms": 0.49841650000000004,
+      "stdev_ms": 0.023790414996886496,
+      "min_ms": 0.479333,
+      "p95_ms": 0.56012515,
+      "p99_ms": 0.57647976,
+      "max_ms": 0.586709
+    },
+    {
+      "id": "q03",
+      "query": "transaction isolation levels",
+      "n": 50,
+      "mean_ms": 0.14890334,
+      "median_ms": 0.1434585,
+      "stdev_ms": 0.020769364739884735,
+      "min_ms": 0.131875,
+      "p95_ms": 0.18146479999999998,
+      "p99_ms": 0.22731775999999992,
+      "max_ms": 0.243917
+    },
+    {
+      "id": "q04",
+      "query": "explicit table locks",
+      "n": 50,
+      "mean_ms": 0.32622334000000003,
+      "median_ms": 0.317521,
+      "stdev_ms": 0.041941582327653625,
+      "min_ms": 0.281833,
+      "p95_ms": 0.3952812499999999,
+      "p99_ms": 0.45393007999999985,
+      "max_ms": 0.490292
+    },
+    {
+      "id": "q05",
+      "query": "how to get inserted rows back",
+      "n": 50,
+      "mean_ms": 0.49046668,
+      "median_ms": 0.483937,
+      "stdev_ms": 0.03444742012581031,
+      "min_ms": 0.455541,
+      "p95_ms": 0.5462917,
+      "p99_ms": 0.599127,
+      "max_ms": 0.621667
+    },
+    {
+      "id": "q06",
+      "query": "array functions and operators",
+      "n": 50,
+      "mean_ms": 0.72736,
+      "median_ms": 0.706646,
+      "stdev_ms": 0.05108875175333887,
+      "min_ms": 0.668875,
+      "p95_ms": 0.8248601999999999,
+      "p99_ms": 0.85082651,
+      "max_ms": 0.858667
+    },
+    {
+      "id": "q07",
+      "query": "create view",
+      "n": 50,
+      "mean_ms": 0.18945584000000001,
+      "median_ms": 0.181458,
+      "stdev_ms": 0.01780617242483227,
+      "min_ms": 0.17575,
+      "p95_ms": 0.226925,
+      "p99_ms": 0.24997975999999997,
+      "max_ms": 0.254084
+    },
+    {
+      "id": "q08",
+      "query": "reclaim storage from dead rows",
+      "n": 50,
+      "mean_ms": 0.60003178,
+      "median_ms": 0.5928340000000001,
+      "stdev_ms": 0.04173447333295562,
+      "min_ms": 0.546042,
+      "p95_ms": 0.67539985,
+      "p99_ms": 0.6963286599999999,
+      "max_ms": 0.710375
+    },
+    {
+      "id": "q09",
+      "query": "sort rows order by",
+      "n": 50,
+      "mean_ms": 0.6065417200000001,
+      "median_ms": 0.5976250000000001,
+      "stdev_ms": 0.034756051760244815,
+      "min_ms": 0.559458,
+      "p95_ms": 0.6704359,
+      "p99_ms": 0.68300433,
+      "max_ms": 0.68525
+    },
+    {
+      "id": "q10",
+      "query": "retry after serialization failure",
+      "n": 50,
+      "mean_ms": 0.27230004,
+      "median_ms": 0.25985400000000003,
+      "stdev_ms": 0.02644167453013426,
+      "min_ms": 0.246458,
+      "p95_ms": 0.32095464999999995,
+      "p99_ms": 0.3552179999999999,
+      "max_ms": 0.367958
+    }
+  ]
+}

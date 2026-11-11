@@ -1,4 +1,4 @@
-# 搜尋品質評估（Precision@5）
+# 搜尋品質與效能評估（Precision@5、查詢時間）
 
 本資料夾是 Term Project I 的搜尋品質評估：用 10 題固定查詢，對每題前 5 筆結果做人工相關性標註，計算 Precision@5（P@5）。
 
@@ -60,6 +60,31 @@
 - 標註由單人完成，沒有做標註者間一致性檢查。
 - 沒有計算召回率（Recall），因為沒有標出每題「所有」相關頁面。
 
+## 查詢時間
+
+**計時範圍**：從 `SearchIndex.search(query, top_k=10)` 收到原始查詢字串開始，到回傳前 10 名結果為止。
+
+- 包含：前處理（轉小寫、切詞、去停用字）、查詢權重、走訪 posting list、餘弦分數、排序、組出前 10 名結果（title、url、75 字 snippet，來自記憶體中的文件）。
+- 不含：索引載入（啟動時只做一次，另外單獨列出）、資料庫存取、Flask / HTTP 往返、JSON 序列化、前端渲染。
+
+**方法**：使用與 P@5 相同的 10 個凍結查詢；索引先載入一次；每個查詢先暖機 3 次（不計入），再計時 50 次，共 500 筆樣本。計時用 `time.perf_counter_ns()`，計時期間暫停垃圾回收。
+
+**結果**（毫秒，500 筆樣本）：
+
+| 平均 | 中位數 | 標準差 | 最小 | p95 | p99 | 最大 |
+|---|---|---|---|---|---|---|
+| 0.445 | 0.494 | 0.190 | 0.132 | 0.707 | 0.792 | 0.859 |
+
+索引載入一次約 21.8 ms（不計入查詢時間）。每個查詢各自的統計見 `latency_results.md`。
+
+**限制**：這是搜尋核心的時間，不是使用者實際看到的端到端延遲；數字來自單一環境（Linux aarch64、Python 3.10.12，索引 250 頁、8,087 個詞），換機器或換索引大小會不同。查詢越多詞、命中的 posting list 越長，時間越長（最慢的 q06 約 0.73 ms，最快的 q03 約 0.15 ms）。
+
+```bash
+# 在 code/backend 執行
+python -m evaluation.measure_latency            # 預設每題計時 50 次、暖機 3 次
+python -m evaluation.measure_latency --runs 200 # 增加樣本數
+```
+
 ## 重現步驟
 
 在 `code/backend` 目錄執行：
@@ -87,3 +112,5 @@ python -m evaluation.compute_metrics
 | `metrics.py` | P@5 與去重頁數的計算函式 |
 | `run_queries.py` | 跑查詢並產生待標註檔案 |
 | `compute_metrics.py` | 由標註計算指標 |
+| `measure_latency.py` | 測量搜尋核心的查詢時間 |
+| `latency_results.json` / `latency_results.md` | 查詢時間統計（整體與每題）與環境資訊 |
