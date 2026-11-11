@@ -1,4 +1,4 @@
-"""Run the frozen query set against data/index.json and dump top-5 for manual labeling.
+"""Run the frozen query set against data/index-pg18.json and dump top-5 for manual labeling.
 
 Usage (from code/backend): python -m evaluation.run_queries [--force]
 Writes evaluation/judgments.csv (fill `relevant` with 1/0 and `reason`),

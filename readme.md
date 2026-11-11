@@ -150,7 +150,7 @@ $env:SEARCH_INDEX_PATH = 'data/index-pg18.json'
 python -m flask --app indexed_app:create_indexed_app run --port 5000
 ```
 
-簡報要比較舊版時，先停止 Flask，再設定 `$env:SEARCH_INDEX_PATH = 'data/index.json'` 並重新啟動。舊版 SQLite 位於 `data/documents.db`。比較時可用 `CREATE TABLE`、`jsonb`、`window functions` 看收錄與排名差異。
+舊版索引（`data/index.json`）已移除，預設索引改為 `data/index-pg18.json`，不需再設定 `SEARCH_INDEX_PATH`。舊版 SQLite 仍保留在 `data/documents.db`；下方「快照比較」表保留當時的名次紀錄。
 
 ### 快照比較
 
